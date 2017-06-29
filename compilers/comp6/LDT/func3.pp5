@@ -1,0 +1,5 @@
+fun loop(u : unit) : int list =
+ [] : int list
+in match loop() with
+	| [] -> 103
+	| x :: xs -> 100

@@ -18,9 +18,11 @@ compile funcDef var expr =
     (_, instr) -> instr
   where
     (labelNew, stack) = stackCreate funcDef var (LabelDef 0)
-    program = comp stack expr
-              @| [MRet]
-              @@ compFunc funcDef (stackFunc stack)
+    (funStart, funEnd) = funcStack (stackFunc stack) --funcGamma
+    program = funStart
+              |@ comp stack expr
+              @| [funEnd, MRet]
+              @@ compFunc funcDef stack --funcGamma
 -------------------------------------------------------------------------------
 -- STOS START
 --height i gamma są potrzebne, ponieważ MGetLocal przyjmuje adresy od góry stosu
@@ -35,8 +37,9 @@ stackCreate :: [FunctionDef p] -> [Var] -> LabelDef -> (LabelDef, StackDef)
 stackCreate funcDef var label =
     (labelNew, StackDef height gamma func)
   where
-    height   = length gamma
+    height   = length gamma + length func
     gamma    = unfoldr stackVar var
+    --gamma    = unfoldr stackVar (map funcName funcDef ++ var)
     (func, labelNew) = stackFun funcDef label
 
 stackCreateF :: Var -> [(Var,Label)] -> StackDef
@@ -85,7 +88,8 @@ stackChange delta stack =
 gammaLookup :: Var -> [(Var,Int)] -> Maybe Int
 gammaLookup var gamma =
  case gamma of
-  [] -> Nothing --możemy nie znaleźć zmiennej na stosie, bo może to być wskaźnika na kod funkcji
+  --[] -> 666 --tylko do debugu (w kodzie wynikowym łatwo dostrzec taką wartość)
+  [] -> Nothing --tylko do debugu (w kodzie wynikowym łatwo dostrzec taką wartość)
   x:xs -> if var == fst x
           then Just $ snd x
           else gammaLookup var xs
@@ -97,6 +101,16 @@ funcLookup var gamma =
   x:xs -> if var == fst x
           then snd x
           else funcLookup var xs
+
+
+funcStack :: [(Var,Label)] -> ([MInstr], MInstr)
+funcStack stackFunc =
+  case stackFunc  of
+    []   -> ([], MPopN 0)
+    (_, label):xs -> let (instr, _) = funcStack xs in
+                      ( instr
+                        ++ [MAlloc 1, MPush, MGetLabel label, MSet 0]
+                      , MPopN $ length stackFunc)
 -- STOS END
 -------------------------------------------------------------------------------
 -- COMP START
@@ -286,7 +300,7 @@ comp stack (EFn p arg _ eFun) =
       )
   where
     wFun = comp stackF eFun
-    stackF = stackChange 1 $ stackCreateF arg (stackFunc stack)
+    stackF = stackChange 1 $ stackExtend arg stack
 -------------------------------------------------------------------------------
 
 addIf :: MCondition -> Comp -> Comp -> Comp
@@ -301,14 +315,14 @@ addIf cond wT wF =
       )
 
 -------------------------------------------------------------------------------
-compFunc :: [FunctionDef p] -> [(Var,Label)] -> Comp
-compFunc funcDef stackFunc =
+compFunc :: [FunctionDef p] -> StackDef -> Comp
+compFunc funcDef stack =
   case funcDef of
     []   -> addInstr []
     x:xs ->   [MLabel fId]
               |@ comp stackF (funcBody x)
               @| [MRet]
-              @@ compFunc xs stackFunc
+              @@ compFunc xs stack
             where
-              fId = funcLookup (funcName x) stackFunc
-              stackF = stackChange 1 $ stackCreateF (funcArg x) stackFunc
+              fId = funcLookup (funcName x) (stackFunc stack)
+              stackF = stackChange 1 $ stackExtend (funcArg x) stack

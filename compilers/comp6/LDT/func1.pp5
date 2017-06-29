@@ -1,0 +1,3 @@
+fun loop(u : unit) : int =
+ 101
+in loop()

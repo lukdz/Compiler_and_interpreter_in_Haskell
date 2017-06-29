@@ -25,12 +25,12 @@ FILES5="./JST/array1
 	./JST/sum2
 	./JST/sum3"
 
-FILES6="./LDT/fn1
-	./LDT/fn2
-	./LDT/fn3
-	./LDT/fn4
-	./LDT/fn5
-	./LDT/fn6"
+FILES6="./6LDT/fn1
+	./6LDT/fn2
+	./6LDT/fn3
+	./6LDT/fn4
+	./6LDT/fn5
+	./6LDT/fn6"
 
 echo "Prac5"
 for f in $FILES5

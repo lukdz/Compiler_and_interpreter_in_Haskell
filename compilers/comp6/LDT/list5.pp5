@@ -1,0 +1,7 @@
+match [100, 104] : int list with
+| [] -> 100
+| x :: xs -> match xs with
+              | [] -> 100
+              | x :: xs -> match xs with
+                            | [] -> 105
+                            | x :: xs -> 100
