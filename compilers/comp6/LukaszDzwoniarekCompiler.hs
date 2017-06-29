@@ -28,7 +28,7 @@ compile funcDef var expr =
 
 freeVars :: Expr p -> Expr [Var]
 freeVars (EVar p var) =
-  EVar [] var
+  EVar [var] var
 
 freeVars (ENum p n) =
   ENum [] n
@@ -37,77 +37,119 @@ freeVars (EBool p b) =
   EBool [] b
 
 freeVars (EUnary p unaryOperator e) =
-    EUnary [] unaryOperator f
+    EUnary xs unaryOperator f
   where
     f = freeVars e
+    xs = freeGet f
 
 freeVars (EBinary p binaryOperator e1 e2) =
-    EBinary [] binaryOperator f1 f2
+    EBinary xs binaryOperator f1 f2
   where
     f1 = freeVars e1
     f2 = freeVars e2
+    xs = freeGet f1 ++ freeGet f2
 
 freeVars (ELet p var e1 e2) =
-    ELet [] var f1 f2
+    ELet xs var f1 f2
   where
     f1 = freeVars e1
     f2 = freeVars e2
+    xs = freeGet f1 ++ freeGet f2
 
 freeVars (EIf p e0 e1 e2) =
-    EIf [] f0 f1 f2
+    EIf xs f0 f1 f2
   where
     f0 = freeVars e0
     f1 = freeVars e1
     f2 = freeVars e2
+    xs = freeGet f0 ++ freeGet f1 ++ freeGet f2
 
 freeVars (EFn p var typ e) =
-    EFn [] var typ f
+    EFn xs var typ f
   where
     f = freeVars e
+    xs = freeGet f
 
-freeVars (EApp p e1 e2) =
-    EApp [] f1 f2
+freeVars (EApp p eFunc eArg) =
+    EApp xs fFunc fArg
   where
-    f1 = freeVars e1
-    f2 = freeVars e2
+    fFunc = freeVars eFunc
+    fArg = freeVars eArg
+    xs = freeGet fFunc ++ freeGet fArg
 
 freeVars (EUnit p) =
   EUnit []
 
 freeVars (EPair p e1 e2) =
-    EPair [] f1 f2
+    EPair xs f1 f2
   where
     f1 = freeVars e1
     f2 = freeVars e2
-
+    xs = freeGet f1 ++ freeGet f2
 
 freeVars (EFst p e) =
-    EFst [] f
+    EFst xs f
   where
     f = freeVars e
-
+    xs = freeGet f
 
 freeVars (ESnd p e) =
-    ESnd [] f
+    ESnd xs f
   where
     f = freeVars e
+    xs = freeGet f
 
 freeVars (ENil p typ) =
   ENil [] typ
 
 freeVars (ECons p e1 e2) =
-    ECons [] f1 f2
+    ECons xs f1 f2
   where
     f1 = freeVars e1
     f2 = freeVars e2
+    xs = freeGet f1 ++ freeGet f2
 
 freeVars (EMatchL p e0 e1 (var1, var2, e2)) =
-    EMatchL [] f0 f1 (var1, var2, f2)
+    EMatchL xs f0 f1 (var1, var2, f2)
   where
     f0 = freeVars e0
     f1 = freeVars e1
     f2 = freeVars e2
+    xs = freeGet f0 ++ freeGet f1 ++ freeGet f2
+-----------------------------------------------------------------------------
 
+freeGet :: Expr [Var] -> [Var]
+freeGet (EVar p var) = p
+
+freeGet (ENum p n) = p
+
+freeGet (EBool p b) = p
+
+freeGet (EUnary p unaryOperator e) = p
+
+freeGet (EBinary p binaryOperator e1 e2) = p
+
+freeGet (ELet p var e1 e2) = p
+
+freeGet (EIf p e0 e1 e2) = p
+
+freeGet (EFn p var typ e) = p
+
+freeGet (EApp p e1 e2) = p
+
+freeGet (EUnit p) = p
+
+freeGet (EPair p e1 e2) = p
+
+freeGet (EFst p e) = p
+
+freeGet (ESnd p e) = p
+
+freeGet (ENil p typ) = p
+
+freeGet (ECons p e1 e2) = p
+
+freeGet (EMatchL p e0 e1 (var1, var2, e2)) = p
 -------------------------------------------------------------------------------
 -- STOS START
 --height i gamma są potrzebne, ponieważ MGetLocal przyjmuje adresy od góry stosu
