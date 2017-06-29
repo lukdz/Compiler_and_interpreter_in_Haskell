@@ -5,8 +5,11 @@
  - Należy zmodyfikować następne dwa wiersze
  - wstawiając nazwy modułów zawierających rozwiązanie
  - pracowni 6 oraz rozwiązanie zadania dodatkowego -}
-import qualified ImieNazwisko         as Solution
-import qualified ImieNazwiskoCompiler as Compiler
+--import qualified ImieNazwisko         as Solution
+import qualified LukaszDzwoniarek         as Solution
+--import qualified ImieNazwiskoCompiler as Compiler
+import qualified LukaszDzwoniarekCompiler as Compiler
+
 
 import System.Console.GetOpt
 import System.Environment
@@ -132,7 +135,7 @@ compileProgram opts fname =
     if tgtMacroasm opts then writeOutput opts (printMCode mcode)
     else if tgtAsm opts then writeOutput opts (printCode opts vars mcode)
     else writeBinaryOutput opts vars (binaryOutputFile fname opts) mcode
-  ) 
+  )
   [ Handler (hPutStrLn stderr . ioeGetErrorString)
   , Handler (\ e -> hPutStrLn stderr $ show (e :: SomeException))
   ]

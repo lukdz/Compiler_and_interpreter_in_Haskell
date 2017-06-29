@@ -1,34 +1,18 @@
-{-
-Debug pro-tips:
-  - funcke mają lable od 0 do n,
-  - lable w main są od n do m
-  - lable w funkcjach są od m do końca
-
-Historia zmian:
- - obsługa liczb i operacji matematycnych
- - obsługa boola i operacji porównania oraz boolowskich
- - obsługa zmiennych (StackDef)
- - obsługa LabelDef (poprawne generowani etykiet skoków)
- - obsługa par
- - obsługa list
- - zmieniono operator @@@ na @| i dodano operator |@
- - zmieniono operator @@| na @| i |@@ na |@
- - implementacja funkcji (wg. Prac5) zakończona i zdebugowana
- - zoptymalizowano pamięciowo działanie list
-    (dla nila z 1+3 jednostek pamięci do 1+0, dla x:xs z 1+3 do 1+2)
- - przerzucono tworzeni stosu i czyszczenie stosu
-    z wywołania funkcji do definicji funkcji
--}
 {-# LANGUAGE Safe #-}
 -- Definiujemy moduł zawierający rozwiązanie.
+-- Należy zmienić nazwę modułu na {Imie}{Nazwisko}Compiler gdzie
+-- za {Imie} i {Nazwisko} należy podstawić odpowiednio swoje imię
+-- i nazwisko zaczynające się wielką literą oraz bez znaków diakrytycznych.
 module LukaszDzwoniarekCompiler(compile) where
 
 import AST
 import MacroAsm
-import Data.List
+--import Data.List
 
 -- Funkcja kompilująca program
+-- UWAGA: to nie jest jeszcze rozwiązanie; należy zmienić jej definicje
 compile :: [FunctionDef p] -> [Var] -> Expr p -> [MInstr]
+--compile = undefined
 compile funcDef var expr =
   case runComp program labelNew of
     (_, instr) -> instr
