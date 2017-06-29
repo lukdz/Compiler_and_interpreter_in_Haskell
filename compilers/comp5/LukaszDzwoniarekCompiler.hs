@@ -15,41 +15,35 @@ Historia zmian:
  - zmieniono operator @@| na @| i |@@ na |@
  - implementacja funkcji (wg. Prac5) zakończona i zdebugowana
  - zoptymalizowano pamięciowo działanie list
-    (dla nila z 1+3 jednostek pamięci do 1, dla x:xs z 1+3 do 1+2)
+    (dla nila z 1+3 jednostek pamięci do 1+0, dla x:xs z 1+3 do 1+2)
  - przerzucono tworzeni stosu i czyszczenie stosu
     z wywołania funkcji do definicji funkcji
 -}
 {-# LANGUAGE Safe #-}
 -- Definiujemy moduł zawierający rozwiązanie.
--- Należy zmienić nazwę modułu na {Imie}{Nazwisko}Compiler gdzie
--- za {Imie} i {Nazwisko} należy podstawić odpowiednio swoje imię
--- i nazwisko zaczynające się wielką literą oraz bez znaków diakrytycznych.
 module LukaszDzwoniarekCompiler(compile) where
 
 import AST
 import MacroAsm
 import Data.List
 
-
 -- Funkcja kompilująca program
--- Dla pracowni nr 4 należy zignorować pierwszy argument
--- UWAGA: to nie jest jeszcze rozwiązanie; należy zmienić jej definicje
 compile :: [FunctionDef p] -> [Var] -> Expr p -> [MInstr]
 compile funcDef var expr =
  case runComp ( comp funcDef stack expr
-                  @| [MRet]
-                  @@ compFunc funcDef stack )
+                @| [MRet]
+                @@ compFunc funcDef stack )
               labelNew of
    (_, instr) -> instr
  where
    (labelNew, stack) = stackCreate funcDef var (LabelDef 0)
 -------------------------------------------------------------------------------
 -- STOS START
--- Definicja stosu
+--height i gamma są potrzebne, ponieważ MGetLocal przyjmuje adresy od góry stosu
 data StackDef = StackDef
   { stackHeight      :: Int             --aktualna wysokość stosu
-  , stackGamma       :: [(Var,Int)]     --słownik zmienna->pozycja na stosie
-  , stackFunc        :: [(FSym,Label)]  --słownik funkcja->etytkieta
+  , stackGamma       :: [(Var,Int)]     --słownik zmienna -> pozycja na stosie od dołu stosu
+  , stackFunc        :: [(FSym,Label)]  --słownik funkcja -> etytkieta
   }
   deriving (Eq)
 
@@ -75,8 +69,8 @@ stackVar var =
     xss@(x:xs)  -> Just ( (x, length xss), xs )
 
 stackFun :: [FunctionDef p] -> LabelDef -> ( [(FSym,Label)], LabelDef )
-stackFun func label =
-  case func of
+stackFun funcDef label =
+  case funcDef of
     []   ->     ([], label)
     x:xs ->     ( y:ys , labelLast )
               where
@@ -84,49 +78,44 @@ stackFun func label =
                 y  = (funcName x, pos)
                 (ys, labelLast) = stackFun xs labelNew
 
--- w słowniku mogą być dwa tłumaczenia etykiet na wartość
--- w ten sposób działa szybciej i dużo oszczędniej
--- jeśli chodzi o pamięć (trwałe struktury danych)
+-- jeśli mamy dwie zmienne o tej samej nazwie w słowniku występują dwa
+-- tłumaczenia etykiet na wartość w ten sposób działa szybciej
+-- i oszczędniej (pamięć w Haskellu to trwałe struktury danych)
 -- w porównaniu do nadpisywania w przypadku dwóch zmiennych o tej samej nazwie
 stackExtend :: Var -> StackDef -> StackDef
 stackExtend var stack =
     StackDef height gamma func
   where
-    height = stackHeight stack + 1
+    height = 1 + stackHeight stack
     gamma  = (var,height) : stackGamma stack
     func   = stackFunc stack
 
 stackChange :: Int -> StackDef -> StackDef
-stackChange change stack =
+stackChange delta stack =
     StackDef height gamma func
   where
-    height = stackHeight stack + change
+    height = stackHeight stack + delta
     gamma  = stackGamma stack
     func   = stackFunc stack
 
 gammaLookup :: Var -> [(Var,Int)] -> Int
 gammaLookup var gamma =
  case gamma of
-  --[] -> 666 --FOR DEBUG ONLY
+  --[] -> 666 --tylko do debugu (w kodzie wynikowym łatwo dostrzec taką wartość)
   x:xs -> if var == fst x
           then snd x
           else gammaLookup var xs
+
 funcLookup :: FSym -> [(FSym,Label)] -> Label
 funcLookup var gamma =
  case gamma of
-  --[] -> 555 --FOR DEBUG ONLY
+  --[] -> 555 --tylko do debugu (w kodzie wynikowym łatwo dostrzec taką wartość)
   x:xs -> if var == fst x
           then snd x
           else funcLookup var xs
-
 -- STOS END
 -------------------------------------------------------------------------------
 -- COMP START
-data LabelDef = LabelDef
-  { current    :: Int        --aktualne id etykiety
-  }
-  deriving (Show, Eq)
-
 newtype Comp = Comp
   { runComp    :: LabelDef -> (LabelDef, [MInstr])
   }
@@ -146,24 +135,36 @@ c @| instr =
 instr |@ c =
   (addInstr instr) @@ c
 
--- gdzie można zamiast addInstr, stosować @| lub |@ -> krótszy zapis
+-- stosowanie @| i |@ skraca i poprawia czytelność kodu
 addInstr :: [MInstr] -> Comp
 addInstr instr =
   Comp (\ x -> (x, instr) )
+-- COMP END
 -------------------------------------------------------------------------------
+-- LabelDef START
+data LabelDef = LabelDef
+  { fresh    :: Int        --aktualne id etykiety
+  }
+  deriving (Show, Eq)
+
+labelOne :: LabelDef -> (LabelDef, Label)
+labelOne ld =
+  ( LabelDef $ fresh ld + 1, fresh ld)
+
+labelTwo :: LabelDef -> (LabelDef, [Label])
+labelTwo ld =
+  let (ld1, l1) = labelOne ld in
+  let (ld2, l2) = labelOne ld1 in
+  ( ld2, [l1,l2] )
+-- LabelDef END
+-------------------------------------------------------------------------------
+-- CONST
 mTrue :: Integer
-mTrue = -1 -- / 65535 / Neg 0 = 1111111111111111 bin
+mTrue = -1 -- = 65535 = Neg 0 = 1111111111111111 bin
+
 mFalse :: Integer
 mFalse = 0
--------------------------------------------------------------------------------
-labelOne :: LabelDef -> (LabelDef, Label)
-labelOne x =
-  ( LabelDef (current x + 1), current x)
-labelTwo :: LabelDef -> (LabelDef, [Label])
-labelTwo x0 =
-  let (x1, l1) = labelOne x0 in
-  let (x2, l2) = labelOne x1 in
-  ( x2, [l1,l2] )
+
 -------------------------------------------------------------------------------
 comp :: [FunctionDef p] -> StackDef -> Expr p -> Comp
 
@@ -186,41 +187,41 @@ comp funcDef _ (EBool p n) =
 
 comp funcDef stack (EBinary p op e1 e2) =
  case op of
-  BAdd -> n @| [MAdd]
-  BSub -> n @| [MSub]
-  BMul -> n @| [MMul]
-  BDiv -> n @| [MDiv]
-  BMod -> n @| [MMod]
-  BEq  -> n @@ addIf MC_EQ nT nF
-  BNeq -> n @@ addIf MC_NE nT nF
-  BLt  -> n @@ addIf MC_LT nT nF
-  BGt  -> n @@ addIf MC_GT nT nF
-  BLe  -> n @@ addIf MC_LE nT nF
-  BGe  -> n @@ addIf MC_GE nT nF
-  BAnd -> n @| [MAnd]
-  BOr  -> n @| [MOr]
+  BAdd -> w @| [MAdd]
+  BSub -> w @| [MSub]
+  BMul -> w @| [MMul]
+  BDiv -> w @| [MDiv]
+  BMod -> w @| [MMod]
+  BEq  -> w @@ addIf MC_EQ wT wF
+  BNeq -> w @@ addIf MC_NE wT wF
+  BLt  -> w @@ addIf MC_LT wT wF
+  BGt  -> w @@ addIf MC_GT wT wF
+  BLe  -> w @@ addIf MC_LE wT wF
+  BGe  -> w @@ addIf MC_GE wT wF
+  BAnd -> w @| [MAnd]
+  BOr  -> w @| [MOr]
  where
-  n1 = comp funcDef stack e1
-  n2 = comp funcDef (stackChange 1 stack) e2
-  n  = n1 @| [MPush] @@ n2
-  nT = addInstr [MConst mTrue]
-  nF = addInstr [MConst mFalse]
+  w  = w1 @| [MPush] @@ w2
+  w1 = comp funcDef stack e1
+  w2 = comp funcDef (stackChange 1 stack) e2
+  wT = addInstr [MConst mTrue]
+  wF = addInstr [MConst mFalse]
 
 
 comp funcDef stack (EUnary p op e) =
  case op of
-  UNeg -> n @| [MNeg]
-  UNot -> n @| [MNot]
+  UNeg -> w @| [MNeg]
+  UNot -> w @| [MNot]
  where
-  n = comp funcDef stack e
+  w = comp funcDef stack e
 
 
-comp funcDef stack (EIf p e0 e1 e2) =
-    w0 @@ addIf MC_NZ w1 w2
+comp funcDef stack (EIf p e eT eF) =
+    w @@ addIf MC_NZ wT wF
   where
-    w0 = comp funcDef stack e0
-    w1 = comp funcDef stack e1
-    w2 = comp funcDef stack e2
+    w = comp funcDef stack e
+    wT = comp funcDef stack eT
+    wF = comp funcDef stack eF
 
 
 comp funcDef stack (ELet p var e1 e2) =
@@ -228,8 +229,8 @@ comp funcDef stack (ELet p var e1 e2) =
  where
   w1 = comp funcDef stack e1
   w2 = comp funcDef (stackExtend var stack) e2
-
 -------------------------------------------------------------------------------
+
 --PAIR
 comp funcDef stack (EPair p e1 e2) =
     [MAlloc 2, MPush] |@ w1 @| [MSet 0] @@ w2 @| [MSet 1, MPopAcc]
@@ -246,11 +247,11 @@ comp funcDef stack (ESnd p e) =
     w @| [MGet 1]
   where
     w = comp funcDef stack e
-
 -------------------------------------------------------------------------------
+
 --LIST
---MAlloc zwraca liczby parzyste z zakresu
---od długość programu (co najmniej dwa) do 8000hex
+--MAlloc zwraca liczby parzyste z zakresu do 0 + długość programu do 8000 hex
+--program ma długość >= 1 (musi zawierać przynajmniej instrukcję MRet)
 --dlatego wartość mFalse / 0 można traktować jako []
 comp funcDef stack (ENil p t) =
     addInstr [MConst mFalse]
@@ -271,9 +272,10 @@ comp funcDef stack (EMatchL p e en (x, xs, ec)) =
     w  = comp funcDef stack e
     wn = comp funcDef stack en
     wc = [MPush, MGet 0, MPush, MGetLocal 1, MGet 1, MSetLocal 1]
-          |@ comp funcDef (stackExtend x . stackExtend xs $ stack) ec
-          @| [MPopN 2]
+         |@ comp funcDef (stackExtend x . stackExtend xs $ stack) ec
+         @| [MPopN 2]
 -------------------------------------------------------------------------------
+
 --Aplikacja funkcji
 comp funcDef stack (EApp p fId e) =
     w @| [MCall fLabel]
@@ -284,18 +286,18 @@ comp funcDef stack (EApp p fId e) =
 
 comp funcDef stack (EUnit p) =
     --addInstr []
-    addInstr [MConst 777]--for debug only
-
+    addInstr [MConst 777] --tylko do debugu (w kodzie wynikowym łatwo dostrzec taką wartość)
 -------------------------------------------------------------------------------
+
 addIf :: MCondition -> Comp -> Comp -> Comp
-addIf cond cT cF =
-  Comp(\x ->
-    let (xNew, [eFalse, eEnd]) = labelTwo x in
-      runComp ( [MBranch cond eFalse]
-                |@ cF @| [MJump eEnd, MLabel eFalse]
-                @@ cT @| [MLabel eEnd]
+addIf cond wT wF =
+  Comp(\label ->
+    let (labelNew, [false, end]) = labelTwo label in
+      runComp ( [MBranch cond false]
+                |@ wF @| [MJump end, MLabel false]
+                @@ wT @| [MLabel end]
               )
-              xNew
+              labelNew
       )
 
 -------------------------------------------------------------------------------
@@ -305,7 +307,7 @@ compFunc funcDef stack =
   case funcDef of
     [] -> addInstr []
     x:xs -> let stackF = stackCreateF (funcArg x) (stackFunc stack) in
-                [MLabel fId, MPush]
+                  [MLabel fId, MPush]
                   |@ (comp funcDef stackF (funcBody x))
                   @| [MPopN 1, MRet]
                   @@ compFunc xs stack
