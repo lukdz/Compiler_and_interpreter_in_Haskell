@@ -14,15 +14,100 @@ import Data.List
 compile :: [FunctionDef p] -> [Var] -> Expr p -> [MInstr]
 --compile = undefined
 compile funcDef var expr =
-  case runComp program labelNew of
-    (_, instr) -> instr
+  let expr = freeVars expr in
+    case runComp program labelNew of
+      (_, instr) -> instr
+    where
+      (labelNew, stack) = stackCreate funcDef var (LabelDef 0)
+      (funStart, funEnd) = funcStack (stackFunc stack) --funcGamma
+      program = funStart
+                |@ comp stack expr
+                @| [funEnd, MRet]
+                @@ compFunc funcDef stack --funcGamma
+-------------------------------------------------------------------------------
+
+freeVars :: Expr p -> Expr [Var]
+freeVars (EVar p var) =
+  EVar [] var
+
+freeVars (ENum p n) =
+  ENum [] n
+
+freeVars (EBool p b) =
+  EBool [] b
+
+freeVars (EUnary p unaryOperator e) =
+    EUnary [] unaryOperator f
   where
-    (labelNew, stack) = stackCreate funcDef var (LabelDef 0)
-    (funStart, funEnd) = funcStack (stackFunc stack) --funcGamma
-    program = funStart
-              |@ comp stack expr
-              @| [funEnd, MRet]
-              @@ compFunc funcDef stack --funcGamma
+    f = freeVars e
+
+freeVars (EBinary p binaryOperator e1 e2) =
+    EBinary [] binaryOperator f1 f2
+  where
+    f1 = freeVars e1
+    f2 = freeVars e2
+
+freeVars (ELet p var e1 e2) =
+    ELet [] var f1 f2
+  where
+    f1 = freeVars e1
+    f2 = freeVars e2
+
+freeVars (EIf p e0 e1 e2) =
+    EIf [] f0 f1 f2
+  where
+    f0 = freeVars e0
+    f1 = freeVars e1
+    f2 = freeVars e2
+
+freeVars (EFn p var typ e) =
+    EFn [] var typ f
+  where
+    f = freeVars e
+
+freeVars (EApp p e1 e2) =
+    EApp [] f1 f2
+  where
+    f1 = freeVars e1
+    f2 = freeVars e2
+
+freeVars (EUnit p) =
+  EUnit []
+
+freeVars (EPair p e1 e2) =
+    EPair [] f1 f2
+  where
+    f1 = freeVars e1
+    f2 = freeVars e2
+
+
+freeVars (EFst p e) =
+    EFst [] f
+  where
+    f = freeVars e
+
+
+freeVars (ESnd p e) =
+    ESnd [] f
+  where
+    f = freeVars e
+
+freeVars (ENil p typ) =
+  ENil [] typ
+
+freeVars (ECons p e1 e2) =
+    ECons [] f1 f2
+  where
+    f1 = freeVars e1
+    f2 = freeVars e2
+
+freeVars (EMatchL p e0 e1 (var1, var2, e2)) =
+    EMatchL [] f0 f1 (var1, var2, f2)
+  where
+    f0 = freeVars e0
+    f1 = freeVars e1
+    f2 = freeVars e2
+
 -------------------------------------------------------------------------------
 -- STOS START
 --height i gamma są potrzebne, ponieważ MGetLocal przyjmuje adresy od góry stosu
@@ -233,7 +318,8 @@ comp stack (ELet p var e1 e2) =
 
 --PAIR
 comp stack (EPair p e1 e2) =
-    [MAlloc 2, MPush] |@ w1 @| [MSet 0] @@ w2 @| [MSet 1, MPopAcc]
+    --[MAlloc 2, MPush] |@ w1 @| [MSet 0] @@ w2 @| [MSet 1, MPopAcc]
+    addRecord [w1, w2]
   where
     w1 = comp (stackChange 1 stack) e1
     w2 = comp (stackChange 1 stack) e2
@@ -260,7 +346,8 @@ comp stack (ENil p t) =
 --w rekordzie 0 -> x
 --w rekordzie 1 -> xs
 comp stack (ECons p e1 e2) =
-    [MAlloc 2, MPush] |@ w1 @| [MSet 0] @@ w2 @| [MSet 1, MPopAcc]
+    --[MAlloc 2, MPush] |@ w1 @| [MSet 0] @@ w2 @| [MSet 1, MPopAcc]
+    addRecord [w1, w2]
   where
     w1 = comp (stackChange 1 stack) e1
     w2 = comp (stackChange 1 stack) e2
@@ -314,7 +401,22 @@ addIf cond wT wF =
               labelNew
       )
 
+
+addRecord :: [Comp] -> Comp
+addRecord ws =
+    [MAlloc n, MPush]
+    |@ addR ws 0
+    @| [MPopAcc]
+  where
+    n = length ws
+    --addR wewnętrzna funkcja, która nie jest widoczna dla innych od addRecord
+    addR :: [Comp] -> Int -> Comp
+    addR w n =
+      case w of
+        [] -> addInstr []
+        x:xs -> x @| [MSet n] @@ addR xs (n+1)
 -------------------------------------------------------------------------------
+
 compFunc :: [FunctionDef p] -> StackDef -> Comp
 compFunc funcDef stack =
   case funcDef of
