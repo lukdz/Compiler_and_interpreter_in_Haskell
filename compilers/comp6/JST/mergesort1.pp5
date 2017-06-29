@@ -1,0 +1,48 @@
+(*
+oczekiwany wynik:
+dla dowolnych czterech liczb
+te same liczby posortowane od największej
+*)
+
+fun split(l : int list) : int list * int list =
+    match l with
+        [] -> ([]:int list, []:int list)
+      | h::t ->
+            let res = split t in (h :: snd res, fst res)
+
+fun merge(p : int list * int list) : int list =
+    let l = fst p in
+    let r = snd p in
+    match l with
+        [] -> r
+      | h1::t1 ->
+            match r with
+                [] -> l
+              | h2::t2 -> if h1 < h2 then h1 :: merge (t1, r) else h2 :: merge (l, t2)
+
+fun sort(l : int list) : int list =
+    let p = split l in
+    let l = fst p in
+    let r = snd p in
+    match r with
+        [] -> l
+      | h::t -> let l = sort l in let r = sort r in merge (l, r)
+
+fun sum(p : int list * int) : int =
+    let l = fst p in
+    let k = snd p in
+    match l with
+        [] -> 0
+      | h::t -> sum (t, k + 1) + h * k
+
+fun toDec (p : int list * int) : int =
+  match fst p with
+    [] -> 0
+    | x :: xs -> x * snd p + toDec(xs, snd p * 10)
+
+in
+let x1=4 in
+let x2=2 in
+let x3=1 in
+let x4=3 in
+    toDec ((sort [x1, x2, x3, x4] : int list), 1)

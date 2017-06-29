@@ -1,0 +1,4 @@
+fun add(n: int): int =
+  ( fn( y : int) -> y ) n
+
+in add 111

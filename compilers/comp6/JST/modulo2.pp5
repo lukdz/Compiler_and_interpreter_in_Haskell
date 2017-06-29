@@ -1,0 +1,18 @@
+(*
+oczekiwany wynik:
+dla liczb a i y
+  - x < y -> 0
+  - wpp -> 1
+*)
+
+fun f (x: int * int) : int list =
+    let a = fst x in
+    let b = snd x in
+    if a < b then [] : int list
+    else 100 mod a :: f (a - 1, b)
+
+in let x=4 in
+   let y=2 in
+    match f((x, y)) with
+      | [] -> 1 div 2
+      | h::t -> 1

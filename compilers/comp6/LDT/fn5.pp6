@@ -1,0 +1,4 @@
+fun add(n: (int -> int) * int): int =
+  (fst n) (snd n)
+
+in add ( ( fn( y : int) -> y ), 111)

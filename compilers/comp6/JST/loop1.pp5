@@ -1,0 +1,15 @@
+(*
+oczekiwany wynik:
+  - n = 1 -> zapętlenie się lub error: ILLEGAL OPCODE: 5E (może być 01 lub inny)
+    (wywołania rekurencyjne mogą zapchać stos i zaczć pisać po kodzie programu)
+  - wpp -> "Division by zero"
+*)
+
+
+fun loop(u : unit) : int =
+    loop ()
+
+in let x=0 in
+  if x = 1
+  then snd (1, loop())
+  else 1 div 0 + loop()

@@ -1,0 +1,13 @@
+(*
+oczekiwany wynik
+  dla n >= 0 -> n
+*)
+
+fun one(u:unit):int = 1
+
+fun sum(n : int) : int =
+if n = 0 then 0
+else sum(n - 2  +  one() ) + one()
+
+in let n=1 in
+  sum n

@@ -2,6 +2,9 @@
 compilers/comp4/Comp5
 compilers/comp5/Comp5
 compilers/comp6/Comp6
+compilers/comp6/emu6809
+compilers/comp6/LDT/emu6809
+compilers/comp6/JST/emu6809
 compilers/emu6809/emu6809
 
 # Ignore a compiled files with extension .b09

@@ -162,7 +162,7 @@ comp stack (EVar p var) =
     Just pos -> let n = stackHeight stack - pos in
                 addInstr [MGetLocal n]
     Nothing -> let label = funcLookup var (stackFunc stack) in
-                addInstr [MGetLabel label]
+                addInstr [MAlloc 1, MPush, MGetLabel label, MSet 0, MPopAcc]
 
 
 comp _ (EBool p n) =
@@ -264,15 +264,29 @@ comp stack (EMatchL p e en (x, xs, ec)) =
 
 --Aplikacja funkcji
 comp stack (EApp p eFun eArg) =
-    wArg @| [MPush] @@ wFun @| [MCallAcc, MPopN 1]
+    wArg @| [MPush] @@ wFun @| [MPush, MGet 0, MCallAcc, MPopN 2]
   where
     wArg = comp stack eArg
-    wFun = comp stack eFun
+    wFun = comp (stackChange 1 stack) eFun
 
 
 comp stack (EUnit p) =
     addInstr []
     --addInstr [MConst 777] --tylko do debugu (w kodzie wynikowym łatwo dostrzec taką wartość)
+-------------------------------------------------------------------------------
+--Lambda
+comp stack (EFn p arg _ eFun) =
+  Comp(\label ->
+    let (labelNew, [lStart, lEnd]) = labelTwo label in
+      runComp ( [MJump lEnd, MLabel lStart]
+                |@ wFun
+                @| [MRet, MLabel lEnd, MAlloc 1, MPush, MGetLabel lStart, MSet 0, MPopAcc]
+              )
+              labelNew
+      )
+  where
+    wFun = comp stackF eFun
+    stackF = stackChange 1 $ stackCreateF arg (stackFunc stack)
 -------------------------------------------------------------------------------
 
 addIf :: MCondition -> Comp -> Comp -> Comp
@@ -297,4 +311,4 @@ compFunc funcDef stackFunc =
               @@ compFunc xs stackFunc
             where
               fId = funcLookup (funcName x) stackFunc
-              stackF = stackCreateF (funcArg x) stackFunc
+              stackF = stackChange 1 $ stackCreateF (funcArg x) stackFunc
