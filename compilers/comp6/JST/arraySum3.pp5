@@ -1,0 +1,8 @@
+(* oczekiwany wynik to 3 *)
+
+fun sum(xs : int list) : int =
+match xs with
+| [] -> 0
+| x::xs -> x + sum xs
+
+in sum [2,1] : int list

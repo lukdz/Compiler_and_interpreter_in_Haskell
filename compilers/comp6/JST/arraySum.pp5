@@ -1,0 +1,24 @@
+(*
+oczekiwany wynik:
+  - dla 1 -> 1
+  - dla 2 -> 3
+  - dla 3 -> 6
+  - dla 4 -> 10
+  - dla 5 -> 15
+  - dla 6 -> 21
+  - dla 7 -> 28
+  - dla 8 -> 36
+  - dla 9 -> 45
+  - dla 100 -> 5050
+*)
+
+fun makeArray(n : int) : int list =
+if n = 0 then [] : int list
+else n :: makeArray (n-1)
+
+fun sum(xs : int list) : int =
+match xs with
+| [] -> 0
+| x::xs -> x + sum xs
+
+input n in sum (makeArray n)

@@ -7,7 +7,7 @@ module LukaszDzwoniarekCompiler(compile) where
 
 import AST
 import MacroAsm
---import Data.List
+import Data.List
 
 -- Funkcja kompilująca program
 -- UWAGA: to nie jest jeszcze rozwiązanie; należy zmienić jej definicje
@@ -27,7 +27,7 @@ compile funcDef var expr =
 data StackDef = StackDef
   { stackHeight      :: Int             --aktualna wysokość stosu
   , stackGamma       :: [(Var,Int)]     --słownik zmienna -> pozycja na stosie od dołu stosu
-  , stackFunc        :: [(FSym,Label)]  --słownik funkcja -> etytkieta
+  , stackFunc        :: [(Var,Label)]  --słownik funkcja -> etytkieta
   }
   deriving (Eq)
 
@@ -39,7 +39,7 @@ stackCreate funcDef var label =
     gamma    = unfoldr stackVar var
     (func, labelNew) = stackFun funcDef label
 
-stackCreateF :: Var -> [(FSym,Label)] -> StackDef
+stackCreateF :: Var -> [(Var,Label)] -> StackDef
 stackCreateF var func =
     StackDef height gamma func
   where
@@ -52,7 +52,7 @@ stackVar var =
     [] -> Nothing
     xss@(x:xs)  -> Just ( (x, length xss), xs )
 
-stackFun :: [FunctionDef p] -> LabelDef -> ( [(FSym,Label)], LabelDef )
+stackFun :: [FunctionDef p] -> LabelDef -> ( [(Var,Label)], LabelDef )
 stackFun funcDef label =
   case funcDef of
     []   ->     ([], label)
@@ -82,15 +82,15 @@ stackChange delta stack =
     gamma  = stackGamma stack
     func   = stackFunc stack
 
-gammaLookup :: Var -> [(Var,Int)] -> Int
+gammaLookup :: Var -> [(Var,Int)] -> Maybe Int
 gammaLookup var gamma =
  case gamma of
-  --[] -> 666 --tylko do debugu (w kodzie wynikowym łatwo dostrzec taką wartość)
+  [] -> Nothing --możemy nie znaleźć zmiennej na stosie, bo może to być wskaźnika na kod funkcji
   x:xs -> if var == fst x
-          then snd x
+          then Just $ snd x
           else gammaLookup var xs
 
-funcLookup :: FSym -> [(FSym,Label)] -> Label
+funcLookup :: Var -> [(Var,Label)] -> Label
 funcLookup var gamma =
  case gamma of
   --[] -> 555 --tylko do debugu (w kodzie wynikowym łatwo dostrzec taką wartość)
@@ -158,9 +158,11 @@ comp _ (ENum p n) =
 
 
 comp stack (EVar p var) =
-    addInstr [MGetLocal n]
-  where
-    n = stackHeight stack - gammaLookup var (stackGamma stack)
+  case gammaLookup var (stackGamma stack) of
+    Just pos -> let n = stackHeight stack - pos in
+                addInstr [MGetLocal n]
+    Nothing -> let label = funcLookup var (stackFunc stack) in
+                addInstr [MGetLabel label]
 
 
 comp _ (EBool p n) =
@@ -261,11 +263,11 @@ comp stack (EMatchL p e en (x, xs, ec)) =
 -------------------------------------------------------------------------------
 
 --Aplikacja funkcji
-comp stack (EApp p fId e) =
-    w @| [MCall fLabel]
+comp stack (EApp p eFun eArg) =
+    wArg @| [MPush] @@ wFun @| [MCallAcc, MPopN 1]
   where
-    w = comp stack e
-    fLabel = funcLookup fId (stackFunc stack)
+    wArg = comp stack eArg
+    wFun = comp stack eFun
 
 
 comp stack (EUnit p) =
@@ -285,13 +287,13 @@ addIf cond wT wF =
       )
 
 -------------------------------------------------------------------------------
-compFunc :: [FunctionDef p] -> [(FSym,Label)] -> Comp
+compFunc :: [FunctionDef p] -> [(Var,Label)] -> Comp
 compFunc funcDef stackFunc =
   case funcDef of
     []   -> addInstr []
-    x:xs ->   [MLabel fId, MPush]
+    x:xs ->   [MLabel fId]
               |@ comp stackF (funcBody x)
-              @| [MPopN 1, MRet]
+              @| [MRet]
               @@ compFunc xs stackFunc
             where
               fId = funcLookup (funcName x) stackFunc

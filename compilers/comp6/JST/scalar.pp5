@@ -1,0 +1,12 @@
+(*
+oczekiwany wynik to 11
+*)
+
+fun scalar(v : int list * int list) : int =
+  match fst v with
+    | [] -> 0
+    | x :: xs -> match snd v with
+                  | [] -> 0
+                  | y :: ys -> x*y + scalar(xs, ys)
+
+in scalar([1,2]: int list, [3,4]: int list)

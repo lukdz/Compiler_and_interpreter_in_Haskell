@@ -1,0 +1,19 @@
+(*
+oczekiwany wynik
+  dla n -> to_lower (sqrt n) np:
+  - dla 0 -> 0
+  - dla 36 -> 6
+  - dla 64 -> 8
+  - dla 100 -> 10
+  - dla 181 -> 13
+  proszę pamiętać, że program jest wykonywany na "procesorze" 16 bitowym
+  wiec liczby większe od 181 powodują przepełnienie w tym programie:
+  182^2 = 33124 > (65535 / 2) = (2^16 - 1) / 2
+  "/ 2" -> liczby ujemne, kod uzupełnień U2
+*)
+
+fun sqrt(n : int * int) : int =
+  if snd n * snd n <= fst n then snd n else sqrt(fst n, snd n - 1)
+
+
+input n in sqrt(n, n)
