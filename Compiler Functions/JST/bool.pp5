@@ -1,0 +1,11 @@
+(*
+oczekiwany wynik
+  - n = 42 lub n = 666 -> n
+  - wpp -> "Division by zero"
+*)
+
+fun fajnaLiczba(n : int) : bool =
+if n = 42 or n = 666 then true
+else false
+
+input x in if fajnaLiczba x then x else 1 div 0

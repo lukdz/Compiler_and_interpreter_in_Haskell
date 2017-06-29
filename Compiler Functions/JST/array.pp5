@@ -1,0 +1,12 @@
+(*
+oczekiwany wynik dla n to n
+dla 0 <= n <= 10 000
+*)
+
+fun makeArray(n : int) : int list =
+	if n = 0 then [] : int list
+	else n :: makeArray (n-1)
+
+input n in match makeArray n with
+	| [] -> 0
+	| x :: xs -> x

@@ -1,0 +1,7 @@
+fun g(u : unit) : int =
+ 111
+
+fun f(u : unit) : int =
+ g u
+
+in f()

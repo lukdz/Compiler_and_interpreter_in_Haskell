@@ -1,3 +1,10 @@
+# Binary files:
+Compiler Functions/Comp5
+emu6809/emu6809
+
+# Ignore a compiled files with extension .b09
+*.b09
+
 
 # Created by https://www.gitignore.io/api/c,haskell
 
