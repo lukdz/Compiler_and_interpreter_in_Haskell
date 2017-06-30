@@ -1,0 +1,5 @@
+fun foo(f: unit -> int) : int = f ()
+
+in let x=0 in
+  let bar = fn (u : unit) -> x
+  in foo bar

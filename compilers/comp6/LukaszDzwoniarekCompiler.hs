@@ -58,7 +58,7 @@ freeVars (ELet p var e1 e2) =
   where
     f1 = freeVars e1
     f2 = freeVars e2
-    xs = union (freeGet f1) (freeGet f2)
+    xs = union (freeGet f1) . delete var $ (freeGet f2)
 
 freeVars (EIf p e0 e1 e2) =
     EIf xs f0 f1 f2
@@ -66,7 +66,7 @@ freeVars (EIf p e0 e1 e2) =
     f0 = freeVars e0
     f1 = freeVars e1
     f2 = freeVars e2
-    xs = freeGet f0 ++ freeGet f1 ++ freeGet f2
+    xs = union (freeGet f0) . union (freeGet f1) $ freeGet f2
 
 freeVars (EFn p var typ e) =
     EFn xs var typ f
@@ -79,7 +79,7 @@ freeVars (EApp p eFunc eArg) =
   where
     fFunc = freeVars eFunc
     fArg = freeVars eArg
-    xs = freeGet fFunc ++ freeGet fArg
+    xs = union (freeGet fArg) (freeGet fFunc) -- ?????????????????????????????
 
 freeVars (EUnit p) =
   EUnit []
@@ -111,7 +111,7 @@ freeVars (ECons p e1 e2) =
   where
     f1 = freeVars e1
     f2 = freeVars e2
-    xs = freeGet f1 ++ freeGet f2
+    xs = union (freeGet f1) (freeGet f2)
 
 freeVars (EMatchL p e0 e1 (var1, var2, e2)) =
     EMatchL xs f0 f1 (var1, var2, f2)
@@ -119,7 +119,8 @@ freeVars (EMatchL p e0 e1 (var1, var2, e2)) =
     f0 = freeVars e0
     f1 = freeVars e1
     f2 = freeVars e2
-    xs = freeGet f0 ++ freeGet f1 ++ freeGet f2
+    xs = union (freeGet f0) . union (freeGet f1)
+         . delete var1 . delete var2 $ freeGet f2
 -----------------------------------------------------------------------------
 
 freeGet :: Expr [Var] -> [Var]

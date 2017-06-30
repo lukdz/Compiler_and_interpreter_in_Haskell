@@ -1,0 +1,4 @@
+let x=0 in
+  let foo = fn (x:int) -> x in
+  let bar = fn (u : unit) -> x
+  in foo (bar ())

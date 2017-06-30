@@ -1,0 +1,5 @@
+fun foo(x: int ): int = x
+fun bar(x: int ): int = foo x
+
+in let x=0 in
+  let foo = x in bar x
