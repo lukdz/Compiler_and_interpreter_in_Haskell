@@ -1,0 +1,4 @@
+fun f(y: int ): int = y + 1
+
+in let x = 5 in
+  f x

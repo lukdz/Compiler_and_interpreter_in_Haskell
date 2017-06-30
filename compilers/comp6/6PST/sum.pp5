@@ -1,0 +1,10 @@
+(* Program sumuje te liczby, które są > 0, w p.p dodaje 1 *)
+
+let a = 10 in
+let b = -5 in
+let c = -1 in
+let d =  0 in
+    (if a > 0 then a else 1) +
+    (if b > 0 then b else 1) +
+    (if c > 0 then c else 1) +
+    (if d > 0 then d else 1)

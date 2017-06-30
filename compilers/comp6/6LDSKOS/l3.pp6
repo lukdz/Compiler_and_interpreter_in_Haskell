@@ -1,0 +1,8 @@
+fun add(n: int*int): int =
+  ( fn( y : int*int) -> fst y + snd n ) n
+
+in 
+let a = 2 in
+let b = 4 in
+let x = (a,b) in
+  add x

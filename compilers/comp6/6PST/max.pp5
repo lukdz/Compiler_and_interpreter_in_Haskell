@@ -1,0 +1,11 @@
+(* Program zwraca maksymalną z licz podanych na wejściu*)
+
+let a = 10 in
+let b = 3 in
+let c = 123 in
+    if a > b then
+        if a > c then a
+        else c
+    else
+        if b > c then b
+        else c

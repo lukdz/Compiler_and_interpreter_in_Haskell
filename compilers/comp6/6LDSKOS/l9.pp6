@@ -1,0 +1,18 @@
+fun just(n: int): int =
+  n*n
+
+fun add(n: (int list)*(int->int)): int =
+  ( fn( y : int list) ->
+      match y with
+      | [] -> 0
+      | x :: xs -> snd n x + add(xs, snd n)
+  ) (fst n)
+
+in
+let a = 1 in
+let b = 2 in
+let c = 3 in
+let d = 4 in
+  let l = [a,b,c,d]: int list in
+  let x = (l, just) in
+  add x

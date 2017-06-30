@@ -1,0 +1,15 @@
+fun f (x:int):int*int = (x,x*x)
+
+fun g (x:int*int):int list =
+	let a = fst x in
+	 let b = snd x in
+	  if a > b then []:int list
+			else (a :: g (a+1,b))
+			
+fun h (x:int list):int =
+	match x with
+		| [] -> 0
+		| y::ys -> y + h ys
+		
+in let a = 4 in
+	h (g (f a))

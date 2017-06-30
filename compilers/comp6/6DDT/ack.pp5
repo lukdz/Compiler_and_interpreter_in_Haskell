@@ -1,0 +1,13 @@
+fun ack(n: int * int):int =
+	if fst n = 0 then snd n + 1 else
+	if fst n > 0 and snd n = 0
+	then ack((fst n - 1, 1)) else
+	if fst n > 0 and snd n > 0
+	then ack((fst n - 1, ack(fst n,snd n - 1))) else 0
+
+in
+let m = 2 in
+let n = 4 in 
+  if n >= 0 and m >= 0
+     then ack(m,n)
+     else 0

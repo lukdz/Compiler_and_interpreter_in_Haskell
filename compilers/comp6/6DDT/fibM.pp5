@@ -1,0 +1,33 @@
+fun mnoz(n : int list) : int list=
+	match n with
+	[] -> [] : int list
+	| x::xs ->
+		match xs with
+		[] -> [] : int list
+		| y::ys ->
+			match ys with
+			[] -> [] : int list
+			| z::zs ->
+				match zs with
+				[] -> [] : int list
+				| q::qs ->
+				[y, x+y, q, z+q] : int list
+
+fun fibH(x : int * int list) : int list=
+	if fst x = 1 then snd x else
+	fibH((fst x - 1,mnoz(snd x)))
+
+fun fib(n: int): int =
+	if n = 0 then 0 else
+	if n = 1 then 1 else
+	match fibH((n,[0,1,1,1]: int list)) with
+	[] -> 0
+	| x::xs ->
+		match xs with
+		[] -> 0
+		| y::ys -> y
+
+in let n = 19 in
+  if n >= 0
+     then fib n
+     else 0

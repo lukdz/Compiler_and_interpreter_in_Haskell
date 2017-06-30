@@ -1,0 +1,10 @@
+fun just(n: int): int =
+  n
+
+fun add(n: int*(int->int)): int =
+  fst n
+
+in
+let a = 6 in
+let x = (a,just) in
+  add x

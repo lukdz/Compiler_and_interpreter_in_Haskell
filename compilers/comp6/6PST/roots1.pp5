@@ -1,0 +1,13 @@
+(* Prosty program zwracający ilosć miejsc zerowych *)
+
+let a=1 in
+let b=0 in
+let c=0 in
+    if a = 0 then
+        if b = 0 then 0 else 1
+    else 
+        let delta = b*b - (4*a*c) in
+            if delta > 0 then 2
+            elif delta = 0 then 1
+            else 0
+          

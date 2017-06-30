@@ -1,0 +1,5 @@
+fun add(n: int): int =
+  ( fn( y : int) -> n+y ) n
+
+in let x = 42 in
+  add x

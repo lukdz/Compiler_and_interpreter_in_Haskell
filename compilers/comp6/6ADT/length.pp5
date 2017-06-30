@@ -1,0 +1,8 @@
+fun f (u:unit) : int list = [2,3,5,7] : int list
+
+fun length (xs: int list):int =
+		match xs with
+			| [] -> 0
+			| x::xs -> 1 + length xs
+			
+in length(f())

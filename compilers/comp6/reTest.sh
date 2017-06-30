@@ -24,7 +24,18 @@ FILES5="./JST/array1
 	./JST/simple
 	./JST/sum1
 	./JST/sum2
-	./JST/sum3"
+	./JST/sum3
+	./6PST/max
+	./6PST/roots0
+	./6PST/roots1
+	./6PST/roots2
+	./6PST/sum
+	./6PST/weird
+	./6ADT/fgh
+	./6ADT/length
+	./6DDT/ack
+	./6DDT/fibM
+	./6DDT/toBin"
 
 #lista plików z kodem źródłowym z rozrzerzeniem .pp6
 FILES6="./6LDT/fn1
@@ -37,7 +48,22 @@ FILES6="./6LDT/fn1
 	./6LDT/fn8
 	./6AST/test_plik19
 	./6AST/test_plik20
-	./6AST/test_plik21"
+	./6AST/test_plik21
+	./6LDSKOS/e2
+	./6LDSKOS/l1
+	./6LDSKOS/l2_1
+	./6LDSKOS/l2_2
+	./6LDSKOS/l3
+	./6LDSKOS/l4_1
+	./6LDSKOS/l4_2
+	./6LDSKOS/l5
+	./6LDSKOS/l6
+	./6LDSKOS/l8
+	./6LDSKOS/l9
+	./6LDSKOS/t1_1
+	./6LDSKOS/t1_2
+	./6LDSKOS/t2
+	./6LDSKOS/t7"
 
 echo "Prac5"
 for f in $FILES5

@@ -1,0 +1,13 @@
+fun toBin(n : int): int list =
+	if n = 0 then []:int list else
+	(n mod 2)::toBin(n div 2)
+
+fun toBinDisp(n : int list):int =
+	match n with
+	[] -> 0
+	| x::xs -> toBinDisp(xs)*10 + x
+
+in let n = 31 in
+  if n >= 0
+     then toBinDisp(toBin(n))
+     else 0

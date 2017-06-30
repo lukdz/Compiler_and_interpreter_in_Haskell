@@ -1,0 +1,12 @@
+(* Dziwny program *)
+
+let a = 1 in
+let b = 2 in
+let c = 3 in
+
+   if (if a > b then c else 0) > 10 then
+       let x = (a = b) in
+          let y = (a = c) in
+             if x and y then 42
+             else if (let z = x and y in z) then 0 else -1
+    else 10 mod 0

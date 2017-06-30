@@ -1,0 +1,15 @@
+fun sum(n : int list) : int =
+  ( fn( y : int list) ->
+      match y with
+      | [] -> 0
+      | x :: xs -> x + sum(xs)
+  )
+  n
+
+in
+let a = 1 in
+let b = 2 in
+let c = 3 in
+let d = 4 in
+  let l = [a,b,c,d]:int list in
+  sum( l )
