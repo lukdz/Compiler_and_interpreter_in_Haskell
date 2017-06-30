@@ -51,14 +51,14 @@ freeVars (EBinary p binaryOperator e1 e2) =
   where
     f1 = freeVars e1
     f2 = freeVars e2
-    xs = freeGet f1 ++ freeGet f2
+    xs = union (freeGet f1) (freeGet f2)
 
 freeVars (ELet p var e1 e2) =
     ELet xs var f1 f2
   where
     f1 = freeVars e1
     f2 = freeVars e2
-    xs = freeGet f1 ++ freeGet f2
+    xs = union (freeGet f1) (freeGet f2)
 
 freeVars (EIf p e0 e1 e2) =
     EIf xs f0 f1 f2
@@ -72,7 +72,7 @@ freeVars (EFn p var typ e) =
     EFn xs var typ f
   where
     f = freeVars e
-    xs = freeGet f
+    xs = delete var (freeGet f)
 
 freeVars (EApp p eFunc eArg) =
     EApp xs fFunc fArg
@@ -89,7 +89,7 @@ freeVars (EPair p e1 e2) =
   where
     f1 = freeVars e1
     f2 = freeVars e2
-    xs = freeGet f1 ++ freeGet f2
+    xs = union (freeGet f1) (freeGet f2)
 
 freeVars (EFst p e) =
     EFst xs f
@@ -228,7 +228,7 @@ gammaLookup var gamma =
 funcLookup :: Var -> [(Var,Label)] -> Label
 funcLookup var gamma =
  case gamma of
-  --[] -> 555 --tylko do debugu (w kodzie wynikowym łatwo dostrzec taką wartość)
+  [] -> 555 --tylko do debugu (w kodzie wynikowym łatwo dostrzec taką wartość)
   x:xs -> if var == fst x
           then snd x
           else funcLookup var xs
@@ -426,15 +426,24 @@ comp stack (EFn p arg _ eFun) =
   Comp(\label ->
     let (labelNew, [lStart, lEnd]) = labelTwo label in
       runComp ( [MJump lEnd, MLabel lStart]
-                |@ wFun
-                @| [MRet, MLabel lEnd, MAlloc n, MPush, MGetLabel lStart, MSet 0, MPopAcc]
+                |@ loadRecord (length p) @@ wFun
+                    -- @| [MRet, MLabel lEnd, MAlloc n, MPush, MGetLabel lStart, MSet 0, MPopAcc]
+
+                    @| [MRet, MLabel lEnd, MAlloc n, MPush, MGetLabel lStart, MSet 0]
+                    @@ saveRecord ( map (\v -> comp (stackChange 1 stack) v ) . map (\v -> EVar [] v ) $ p )
+                    -- @@ saveRecord ( map (\_ -> comp (stackChange 1 stack) (ENum [] 444) ) $ p )
               )
               labelNew
       )
   where
     wFun = comp stackF eFun
-    stackF = stackChange 1 $ stackExtend arg stack
-    n = length p
+
+    --stackF = stackChange (1+n) $ stackExtend arg stack
+          -- foldr (+) 5 [1,2,3,4]
+    stackF0 = stackChange 1 $ stackExtend arg stack
+    stackF = foldr stackExtend stackF0 p
+
+    n = 1 + length p
 -------------------------------------------------------------------------------
 
 addIf :: MCondition -> Comp -> Comp -> Comp
@@ -462,6 +471,33 @@ addRecord ws =
       case w of
         [] -> addInstr []
         x:xs -> x @| [MSet n] @@ addR xs (n+1)
+
+
+saveRecord :: [Comp] -> Comp
+saveRecord ws =
+    saveR ws 1
+    @| [MPopAcc]
+  where
+    n = length ws
+    --saveR wewnętrzna funkcja, która nie jest widoczna dla innych od addRecord
+    saveR :: [Comp] -> Int -> Comp
+    saveR w n =
+      case w of
+        [] -> addInstr []
+        x:xs -> x @| [MSet n] @@ saveR xs (n+1)
+
+
+loadRecord :: Int -> Comp
+loadRecord n =
+    loadR 0 n
+  where
+    --loadR wewnętrzna funkcja, która nie jest widoczna dla innych od addRecord
+    loadR :: Int -> Int -> Comp
+    loadR w n =
+        if n > 0
+          then [MGetLocal w, MGet n, MPush] |@ loadR (w+1) (n-1)
+          else addInstr []
+
 -------------------------------------------------------------------------------
 
 compFunc :: [FunctionDef p] -> StackDef -> Comp

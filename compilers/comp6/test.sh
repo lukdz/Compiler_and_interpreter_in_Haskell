@@ -30,7 +30,9 @@ FILES6="./6LDT/fn1
 	./6LDT/fn3
 	./6LDT/fn4
 	./6LDT/fn5
-	./6LDT/fn6"
+	./6LDT/fn6
+	./6LDT/fn7
+	./6LDT/fn8"
 
 echo "Prac5"
 for f in $FILES5
