@@ -22,7 +22,11 @@ compile funcDef var expr =
       program = funStart
                 |@ comp stack exprVar
                 @| [funEnd, MRet]
+                --lambdy maina
+                -- @@ (\lable -> (lable with lambdas lable = [] , lambdas lable) )
                 @@ compFunc funcDef stack --funcGamma
+                --lambdy funkcji
+                -- @@ (\lable -> (lable with lambdas lable = [] , lambdas lable) )
       exprVar = freeVars expr
 -------------------------------------------------------------------------------
 
@@ -274,6 +278,7 @@ addInstr instr =
 -- LabelDef START
 data LabelDef = LabelDef
   { fresh    :: Int        --aktualne id etykiety
+  --lambdas    :: [MInstr]
   }
   deriving (Show, Eq)
 

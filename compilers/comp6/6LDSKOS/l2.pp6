@@ -1,0 +1,7 @@
+fun fib(n : int) : int =
+  if n <= 1
+  then n
+  else ( fn( y : int) -> fib(y-1) + fib(n-2) ) n
+
+input x in
+  fib(x)
