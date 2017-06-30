@@ -26,6 +26,10 @@ compile funcDef var expr =
                 @@ compFunc funcDef stack --funcGamma
 -------------------------------------------------------------------------------
 
+--TE SUMY ++ TRZEBA POPRAWIĆ, BO BYŁY PISANE NA SZYBKO
+--NA PEWNO TRZEBA COŚ Z TYCH LIST USUWAĆ, NA RAZIE CHYBA MOŻNA TAK ZOSTAWIĆ
+--I SKUPIĆ SIĘ NA IMPLEMENTACJI ZBIORU ZMIENNYCH DLA LAMBDY + JAK JE ODCZYTYWAĆ
+
 freeVars :: Expr p -> Expr [Var]
 freeVars (EVar p var) =
   EVar [var] var
