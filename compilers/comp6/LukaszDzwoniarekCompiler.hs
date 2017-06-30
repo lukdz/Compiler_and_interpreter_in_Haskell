@@ -14,16 +14,16 @@ import Data.List
 compile :: [FunctionDef p] -> [Var] -> Expr p -> [MInstr]
 --compile = undefined
 compile funcDef var expr =
-  let expr = freeVars expr in
     case runComp program labelNew of
       (_, instr) -> instr
     where
       (labelNew, stack) = stackCreate funcDef var (LabelDef 0)
       (funStart, funEnd) = funcStack (stackFunc stack) --funcGamma
       program = funStart
-                |@ comp stack expr
+                |@ comp stack exprVar
                 @| [funEnd, MRet]
                 @@ compFunc funcDef stack --funcGamma
+      exprVar = freeVars expr
 -------------------------------------------------------------------------------
 
 --TE SUMY ++ TRZEBA POPRAWIĆ, BO BYŁY PISANE NA SZYBKO
@@ -295,7 +295,7 @@ mFalse :: Integer
 mFalse = 0
 
 -------------------------------------------------------------------------------
-comp :: StackDef -> Expr p -> Comp
+comp :: StackDef -> Expr [Var] -> Comp
 
 
 comp _ (ENum p n) =
@@ -427,13 +427,14 @@ comp stack (EFn p arg _ eFun) =
     let (labelNew, [lStart, lEnd]) = labelTwo label in
       runComp ( [MJump lEnd, MLabel lStart]
                 |@ wFun
-                @| [MRet, MLabel lEnd, MAlloc 1, MPush, MGetLabel lStart, MSet 0, MPopAcc]
+                @| [MRet, MLabel lEnd, MAlloc n, MPush, MGetLabel lStart, MSet 0, MPopAcc]
               )
               labelNew
       )
   where
     wFun = comp stackF eFun
     stackF = stackChange 1 $ stackExtend arg stack
+    n = length p
 -------------------------------------------------------------------------------
 
 addIf :: MCondition -> Comp -> Comp -> Comp
@@ -468,7 +469,7 @@ compFunc funcDef stack =
   case funcDef of
     []   -> addInstr []
     x:xs ->   [MLabel fId]
-              |@ comp stackF (funcBody x)
+              |@ comp stackF (freeVars . funcBody $ x)
               @| [MRet]
               @@ compFunc xs stack
             where
