@@ -1,0 +1,6 @@
+fun f( u : unit) : int =
+  let a = 111 in
+  let b = 112 in
+    (fn( y : int) -> a + b ) 110
+
+in f ()

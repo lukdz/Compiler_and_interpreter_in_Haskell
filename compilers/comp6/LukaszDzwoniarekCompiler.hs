@@ -18,7 +18,7 @@ compile funcDef var expr =
       (_, instr) -> instr
     where
       (labelNew, stack) = stackCreate funcDef var (LabelDef 0)
-      (funStart, funEnd) = funcStack (stackFunc stack) --funcGamma
+      (funStart, funEnd) = ([],MPopN 0) --funcStack (stackFunc stack) --funcGamma
       program = funStart
                 |@ comp stack exprVar
                 @| [funEnd, MRet]
@@ -29,10 +29,6 @@ compile funcDef var expr =
                 -- @@ (\lable -> (lable with lambdas lable = [] , lambdas lable) )
       exprVar = freeVars expr
 -------------------------------------------------------------------------------
-
---TE SUMY ++ TRZEBA POPRAWIĆ, BO BYŁY PISANE NA SZYBKO
---NA PEWNO TRZEBA COŚ Z TYCH LIST USUWAĆ, NA RAZIE CHYBA MOŻNA TAK ZOSTAWIĆ
---I SKUPIĆ SIĘ NA IMPLEMENTACJI ZBIORU ZMIENNYCH DLA LAMBDY + JAK JE ODCZYTYWAĆ
 
 freeVars :: Expr p -> Expr [Var]
 freeVars (EVar p var) =
@@ -48,21 +44,21 @@ freeVars (EUnary p unaryOperator e) =
     EUnary xs unaryOperator f
   where
     f = freeVars e
-    xs = freeGet f
+    xs = AST.getData f
 
 freeVars (EBinary p binaryOperator e1 e2) =
     EBinary xs binaryOperator f1 f2
   where
     f1 = freeVars e1
     f2 = freeVars e2
-    xs = union (freeGet f1) (freeGet f2)
+    xs = union (AST.getData f1) (AST.getData f2)
 
 freeVars (ELet p var e1 e2) =
     ELet xs var f1 f2
   where
     f1 = freeVars e1
     f2 = freeVars e2
-    xs = union (freeGet f1) . delete var $ (freeGet f2)
+    xs = union (AST.getData f1) . delete var $ (AST.getData f2)
 
 freeVars (EIf p e0 e1 e2) =
     EIf xs f0 f1 f2
@@ -70,20 +66,20 @@ freeVars (EIf p e0 e1 e2) =
     f0 = freeVars e0
     f1 = freeVars e1
     f2 = freeVars e2
-    xs = union (freeGet f0) . union (freeGet f1) $ freeGet f2
+    xs = union (AST.getData f0) . union (AST.getData f1) $ AST.getData f2
 
 freeVars (EFn p var typ e) =
     EFn xs var typ f
   where
     f = freeVars e
-    xs = delete var (freeGet f)
+    xs = delete var (AST.getData f)
 
 freeVars (EApp p eFunc eArg) =
     EApp xs fFunc fArg
   where
     fFunc = freeVars eFunc
     fArg = freeVars eArg
-    xs = union (freeGet fArg) (freeGet fFunc) -- ?????????????????????????????
+    xs = union (AST.getData fArg) (AST.getData fFunc)
 
 freeVars (EUnit p) =
   EUnit []
@@ -93,19 +89,19 @@ freeVars (EPair p e1 e2) =
   where
     f1 = freeVars e1
     f2 = freeVars e2
-    xs = union (freeGet f1) (freeGet f2)
+    xs = union (AST.getData f1) (AST.getData f2)
 
 freeVars (EFst p e) =
     EFst xs f
   where
     f = freeVars e
-    xs = freeGet f
+    xs = AST.getData f
 
 freeVars (ESnd p e) =
     ESnd xs f
   where
     f = freeVars e
-    xs = freeGet f
+    xs = AST.getData f
 
 freeVars (ENil p typ) =
   ENil [] typ
@@ -115,7 +111,7 @@ freeVars (ECons p e1 e2) =
   where
     f1 = freeVars e1
     f2 = freeVars e2
-    xs = union (freeGet f1) (freeGet f2)
+    xs = union (AST.getData f1) (AST.getData f2)
 
 freeVars (EMatchL p e0 e1 (var1, var2, e2)) =
     EMatchL xs f0 f1 (var1, var2, f2)
@@ -123,42 +119,8 @@ freeVars (EMatchL p e0 e1 (var1, var2, e2)) =
     f0 = freeVars e0
     f1 = freeVars e1
     f2 = freeVars e2
-    xs = union (freeGet f0) . union (freeGet f1)
-         . delete var1 . delete var2 $ freeGet f2
------------------------------------------------------------------------------
-
-freeGet :: Expr [Var] -> [Var]
-freeGet (EVar p var) = p
-
-freeGet (ENum p n) = p
-
-freeGet (EBool p b) = p
-
-freeGet (EUnary p unaryOperator e) = p
-
-freeGet (EBinary p binaryOperator e1 e2) = p
-
-freeGet (ELet p var e1 e2) = p
-
-freeGet (EIf p e0 e1 e2) = p
-
-freeGet (EFn p var typ e) = p
-
-freeGet (EApp p e1 e2) = p
-
-freeGet (EUnit p) = p
-
-freeGet (EPair p e1 e2) = p
-
-freeGet (EFst p e) = p
-
-freeGet (ESnd p e) = p
-
-freeGet (ENil p typ) = p
-
-freeGet (ECons p e1 e2) = p
-
-freeGet (EMatchL p e0 e1 (var1, var2, e2)) = p
+    xs = union (AST.getData f0) . union (AST.getData f1)
+         . delete var1 . delete var2 $ AST.getData f2
 -------------------------------------------------------------------------------
 -- STOS START
 --height i gamma są potrzebne, ponieważ MGetLocal przyjmuje adresy od góry stosu
@@ -173,7 +135,7 @@ stackCreate :: [FunctionDef p] -> [Var] -> LabelDef -> (LabelDef, StackDef)
 stackCreate funcDef var label =
     (labelNew, StackDef height gamma func)
   where
-    height   = length gamma + length func
+    height   = length gamma -- + length func
     gamma    = unfoldr stackVar var
     --gamma    = unfoldr stackVar (map funcName funcDef ++ var)
     (func, labelNew) = stackFun funcDef label
@@ -434,7 +396,7 @@ comp stack (EFn p arg _ eFun) =
       runComp ( [MJump lEnd, MLabel lStart]
                 |@ loadRecord (length p) @@ wFun
                     -- @| [MRet, MLabel lEnd, MAlloc n, MPush, MGetLabel lStart, MSet 0, MPopAcc]
-
+                    @| [MPopN $ length p] -- usuwanie wczytanych zmiennych wolnych ze stosu
                     @| [MRet, MLabel lEnd, MAlloc n, MPush, MGetLabel lStart, MSet 0]
                     @@ saveRecord ( map (\v -> comp (stackChange 1 stack) v ) . map (\v -> EVar [] v ) $ p )
                     -- @@ saveRecord ( map (\_ -> comp (stackChange 1 stack) (ENum [] 444) ) $ p )
