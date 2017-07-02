@@ -1,0 +1,65 @@
+$ ./test.sh 
+Prac5
+./JST/array1		111
+./JST/arraySum1		0
+./JST/arraySum2		1
+./JST/arraySum3		3
+./JST/arraySum4		6
+./JST/bool1		42
+./JST/bool2		Division by zero
+./JST/fib1		0
+./JST/fib2		34
+./JST/length		6
+./JST/loop1		Division by zero
+./JST/mergesort1	4321
+./JST/mergesort2	4321
+./JST/mergesort3	4321
+./JST/mergesort4	4321
+./JST/modulo1		0
+./JST/modulo2		1
+./JST/scalar		11
+./JST/simple		2
+./JST/sum1		0
+./JST/sum2		1
+./JST/sum3		111
+./6PST/max		123
+./6PST/roots0		0
+./6PST/roots1		1
+./6PST/roots2		2
+./6PST/sum		13
+./6PST/weird		Division by zero
+./6ADT/fgh		130
+./6ADT/length		4
+./6DDT/ack		11
+./6DDT/fibM		4181
+./6DDT/toBin		11111
+
+Prac6
+./6LDT/fn1		111
+./6LDT/fn2		111
+./6LDT/fn3		111
+./6LDT/fn4		111
+./6LDT/fn5		111
+./6LDT/fn6		111
+./6LDT/fn7		111
+./6LDT/fn8		111
+./6AST/test_plik19	0
+./6AST/test_plik20	0
+./6AST/test_plik21	0
+./6LDSKOS/e2		43
+./6LDSKOS/l1		84
+./6LDSKOS/l2_1		1
+./6LDSKOS/l2_2		610
+./6LDSKOS/l3		6
+./6LDSKOS/l4_1		1
+./6LDSKOS/l4_2		610
+./6LDSKOS/l5		10
+./6LDSKOS/l6		6
+./6LDSKOS/l8		23
+./6LDSKOS/l9		30
+./6LDSKOS/t1_1		43
+./6LDSKOS/t1_2		6
+./6LDSKOS/t2		6
+./6LDSKOS/t7		5
+
+test completed
