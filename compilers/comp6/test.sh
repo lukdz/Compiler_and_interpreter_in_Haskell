@@ -68,47 +68,54 @@ Files6="./6LDT/fn1
 
 #kompilacja kompiltora
 COMP="$(ghc Comp$Version)"
+if [ "$?" -ne "0" ]
+	then 	echo -e "Comp$Version compilation\tFAIL"
 
-#wywołanie testów z rozszerzeniem .pp5
-echo "Prac5"
-for f in $Files5
-do	
-        COMP="$(./Comp$Version  $f.pp5)"
-	EMULA="$(./emu6809  $f.b09)"
-	INTER="$(./Prac$Version  $f.pp5)"
-	if [ ${#f} -gt 15 ]
-	then PATH="$f"
-	else PATH="$f\t"
-	fi
-	if [ "$EMULA" == "${INTER:6}" ]
-	then echo -e "$PATH\tOK"
-	else 	if [  "$INTER"  == "RuntimeError" ] && [  "$EMULA"  == "Division by zero" ];
-		then echo -e "$PATH\tOK"
-		else echo -e "$PATH\tFAIL\temu: $EMULA\tPrac: ${INTER}"
-		fi
-	fi
-done
-echo ""
+	else 	echo -e "Comp$Version compilation\tOK\n"
+		#wywołanie testów z rozszerzeniem .pp5
+		echo "Prac5"
+		for f in $Files5
+		do	
+			COMP="$(./Comp$Version  $f.pp5)"
+			EMULA="$(./emu6809  $f.b09)"
+			INTER="$(./Prac$Version  $f.pp5)"
+			if [ ${#f} -gt 15 ]
+			then PATH="$f"
+			else PATH="$f\t"
+			fi
+			if [ "$EMULA" == "${INTER:6}" ]
+			then echo -e "$PATH\tOK"
+			else 	if [  "$INTER"  == "RuntimeError" ] && [  "$EMULA"  == "Division by zero" ];
+				then echo -e "$PATH\tOK"
+				else echo -e "$PATH\tFAIL\temu: $EMULA\tPrac: ${INTER}"
+				fi
+			fi
+		done
+		echo ""
 
-#wywołanie testów z rozszerzeniem .pp6
-echo "Prac6"
-for f in $Files6
-do
-        COMP="$(./Comp$Version  $f.pp6)"
-	EMULA="$(./emu6809  $f.b09)"
-	INTER="$(./Prac$Version  $f.pp6)"
-	if [ ${#f} -gt 15 ]
-	then PATH="$f"
-	else PATH="$f\t"
-	fi
-	if [ "$EMULA" == "${INTER:6}" ]
-	then echo -e "$PATH\tOK"
-	else 	if [  "$INTER"  == "RuntimeError" ] && [  "$EMULA"  == "Division by zero" ];
-		then echo -e "$PATH\tOK"
-		else echo -e "$PATH\tFAIL\temu: $EMULA\tPrac: ${INTER}"
-		fi
-	fi
-done
-echo ""
+		#wywołanie testów z rozszerzeniem .pp6
+		echo "Prac6"
+		for f in $Files6
+		do
+			COMP="$(./Comp$Version  $f.pp6)"
+			EMULA="$(./emu6809  $f.b09)"
+			INTER="$(./Prac$Version  $f.pp6)"
+			if [ ${#f} -gt 15 ]
+			then PATH="$f"
+			else PATH="$f\t"
+			fi
+			if [ "$EMULA" == "${INTER:6}" ]
+			then echo -e "$PATH\tOK"
+			else 	if [  "$INTER"  == "RuntimeError" ] && [  "$EMULA"  == "Division by zero" ];
+				then echo -e "$PATH\tOK"
+				else echo -e "$PATH\tFAIL\temu: $EMULA\tPrac: ${INTER}"
+				fi
+			fi
+		done
+		echo ""
 
-echo "test completed"
+		#echo "test completed"
+		echo -e "test \t\t\tFINISHED"
+fi
+
+

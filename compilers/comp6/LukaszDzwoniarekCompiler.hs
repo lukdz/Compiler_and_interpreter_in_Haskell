@@ -12,16 +12,23 @@ import Data.List
 -- Funkcja kompilująca program
 -- UWAGA: to nie jest jeszcze rozwiązanie; należy zmienić jej definicje
 compile :: [FunctionDef p] -> [Var] -> Expr p -> [MInstr]
---compile = undefined
 compile funcDef var expr =
+  --optimizations [] $ compile1 funcDef var expr
+  --optimizations [PopSum] $ compile1 funcDef var expr
+  --optimizations [PopDel] $ compile1 funcDef var expr
+  --optimizations [Br0] $ compile1 funcDef var expr
+  --optimizations [Br1] $ compile1 funcDef var expr
+  optimizations [PopSum, PopDel, Br0, Br1] $ compile1 funcDef var expr
+
+
+compile1 :: [FunctionDef p] -> [Var] -> Expr p -> [MInstr]
+compile1 funcDef var expr =
     case runComp program labelNew of
       (_, instr) -> instr
     where
       (labelNew, stack) = stackCreate funcDef var (LabelDef 0)
-      (funStart, funEnd) = ([],MPopN 0) --funcStack (stackFunc stack) --funcGamma
-      program = funStart
-                |@ comp stack exprVar
-                @| [funEnd, MRet]
+      program = comp stack exprVar
+                @| [MRet]
                 --lambdy maina
                 -- @@ (\lable -> (lable with lambdas lable = [] , lambdas lable) )
                 @@ compFunc funcDef stack --funcGamma
@@ -135,9 +142,8 @@ stackCreate :: [FunctionDef p] -> [Var] -> LabelDef -> (LabelDef, StackDef)
 stackCreate funcDef var label =
     (labelNew, StackDef height gamma func)
   where
-    height   = length gamma -- + length func
+    height   = length gamma
     gamma    = unfoldr stackVar var
-    --gamma    = unfoldr stackVar (map funcName funcDef ++ var)
     (func, labelNew) = stackFun funcDef label
 
 stackCreateF :: Var -> [(Var,Label)] -> StackDef
@@ -195,7 +201,7 @@ gammaLookup var gamma =
 funcLookup :: Var -> [(Var,Label)] -> Label
 funcLookup var gamma =
  case gamma of
-  [] -> 555 --tylko do debugu (w kodzie wynikowym łatwo dostrzec taką wartość)
+  --[] -> 555 --tylko do debugu (w kodzie wynikowym łatwo dostrzec taką wartość)
   x:xs -> if var == fst x
           then snd x
           else funcLookup var xs
@@ -399,18 +405,13 @@ comp stack (EFn p arg _ eFun) =
                     @| [MPopN $ length p] -- usuwanie wczytanych zmiennych wolnych ze stosu
                     @| [MRet, MLabel lEnd, MAlloc n, MPush, MGetLabel lStart, MSet 0]
                     @@ saveRecord ( map (\v -> comp (stackChange 1 stack) v ) . map (\v -> EVar [] v ) $ p )
-                    -- @@ saveRecord ( map (\_ -> comp (stackChange 1 stack) (ENum [] 444) ) $ p )
               )
               labelNew
       )
   where
     wFun = comp stackF eFun
-
-    --stackF = stackChange (1+n) $ stackExtend arg stack
-          -- foldr (+) 5 [1,2,3,4]
     stackF0 = stackChange 1 $ stackExtend arg stack
     stackF = foldr stackExtend stackF0 p
-
     n = 1 + length p
 -------------------------------------------------------------------------------
 
@@ -425,7 +426,8 @@ addIf cond wT wF =
               labelNew
       )
 
-
+-------------------------------------------------------------------------------
+--operacja na rekordach, pomocne dla par, list i lambd
 addRecord :: [Comp] -> Comp
 addRecord ws =
     [MAlloc n, MPush]
@@ -467,7 +469,7 @@ loadRecord n =
           else addInstr []
 
 -------------------------------------------------------------------------------
-
+--kompilacja funkcji globalnych
 compFunc :: [FunctionDef p] -> StackDef -> Comp
 compFunc funcDef stack =
   case funcDef of
@@ -479,3 +481,69 @@ compFunc funcDef stack =
             where
               fId = funcLookup (funcName x) (stackFunc stack)
               stackF = stackChange 1 $ stackExtend (funcArg x) stack
+
+
+-------------------------------------------------------------------------------
+
+data FlagDef = PopSum   --łaczenie kolejnych instrukcji MPopN w jedną
+             | PopDel   --usuwanie instrukcji MPopN 0
+             | Br0      --usuwanie instrukcji MBranch MC_0
+             | Br1      --zastępowanie instrukcji MBranch MC_1 instukcją MJump
+  deriving (Eq, Show)
+
+
+flagInteger :: FlagDef -> Integer
+flagInteger PopSum  = 1
+flagInteger PopDel  = 2
+flagInteger Br0     = 3
+flagInteger Br1     = 3
+
+
+instance Ord FlagDef where
+  a `compare` b  = flagInteger a `compare` flagInteger b
+
+
+optimizations :: [FlagDef] -> [MInstr] -> [MInstr]
+optimizations flags instr =
+  case sort flags of
+    []   -> instr
+    x:xs -> optimizations xs . optim x $ instr
+
+
+optim  :: FlagDef -> [MInstr] -> [MInstr]
+
+optim flag@PopSum instr =
+  case instr of
+    MPopN n1 : MPopN n2 : xs -> optim flag $ MPopN (n1+n2) : xs
+    x : xs -> x : optim flag xs
+    [] -> []
+
+optim flag@PopDel instr =
+  case instr of
+    MPopN 0 : xs -> optim flag xs
+    x : xs -> x : optim flag xs
+    [] -> []
+
+optim flag@Br0 instr =
+  case instr of
+    MBranch MC_0 _ : xs -> optim flag xs
+    x : xs -> x : optim flag xs
+    [] -> []
+
+optim flag@Br1 instr =
+  case instr of
+    MBranch MC_1 lable : xs -> MJump lable : optim flag xs
+    x : xs -> x : optim flag xs
+    [] -> []
+
+{-
+optim flag instr =
+  case instr of
+    _ : _ : _ -> case (flag,    instr) of
+                      (PopSum,  MPopN n1 : MPopN n2 : xs) -> optim flag $ MPopN (n1+n2) : xs
+                      (_,       x : xs) -> x : optim flag xs
+    _ : _ ->     case (flag,    instr) of
+                      (PopDel,  MPopN 0 : xs) -> optim flag xs
+                      (_,       x : xs) -> x : optim flag xs
+    [] -> []
+-}
