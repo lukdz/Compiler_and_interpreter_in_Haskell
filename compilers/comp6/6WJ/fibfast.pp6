@@ -1,0 +1,11 @@
+fun fibaux (x : int * (int * int) ) : int=
+   let n = fst x in
+   let curr = fst (snd x) in
+   let prev = snd (snd x) in
+   if n = 0 then fst (snd x)
+   else fibaux (n - 1, (prev + curr, curr))
+
+fun fib (n : int) : int =
+   fibaux (n, (0, 1))
+
+input n in fib n

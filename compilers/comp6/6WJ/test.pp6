@@ -1,0 +1,3 @@
+match [1, 1 div 0]:int list with
+| [] -> 1
+| h::t -> h

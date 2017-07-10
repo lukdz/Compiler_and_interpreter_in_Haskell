@@ -1,0 +1,4 @@
+input x y in
+let flip = fn(p: int*int)->(snd p, fst p) in
+let minus = fn(p: int*int)->fst p - snd p in
+minus (flip (x,y))

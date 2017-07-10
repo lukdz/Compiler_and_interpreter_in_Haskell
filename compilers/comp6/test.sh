@@ -64,7 +64,16 @@ Files6="./6LDT/fn1
 	./6LDSKOS/t1_1
 	./6LDSKOS/t1_2
 	./6LDSKOS/t2
-	./6LDSKOS/t7"
+	./6LDSKOS/t7
+	./6WJ/closure
+	./6WJ/intmap
+	./6WJ/intfold
+	./6WJ/intfold#2
+	./6WJ/mergesort
+	./6JS/simple
+	./6JS/length
+	./6JS/scalar
+	./6JS/map"
 
 #kompilacja kompiltora
 COMP="$(ghc Comp$Version)"

@@ -1,0 +1,4 @@
+fun pairsum(x : int * int) : int = fst x + snd x
+
+in
+pairsum (3, 4)

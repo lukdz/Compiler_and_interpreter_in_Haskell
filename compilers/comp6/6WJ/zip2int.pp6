@@ -1,0 +1,42 @@
+fun head_i (x : int list) : int =
+   match x with
+   | [] -> 1 div 0
+   | h :: t -> h
+
+fun tail_i (x : int list) : int list =
+   match x with
+   | [] -> [1 div 0] : int  list
+   | h :: t -> t
+
+fun empty_i (x : int list) : bool =
+   match x with
+   | [] -> true
+   | h :: t -> false
+
+fun head_ii (x : (int * int) list) : int * int =
+   match x with
+   | [] -> (1 div 0, 1 div 0)
+   | h :: t -> h
+
+fun tail_ii (x : (int * int) list) : (int * int) list =
+   match x with
+   | [] -> [(1 div 0, 1 div 0)] : (int * int) list
+   | h :: t -> t
+
+fun zip2int(x : (int list) * (int list)) : (int * int) list =
+   match fst x with
+   | [] -> if empty_i (snd x) then [] : (int * int) list
+           else [(1 div 0, 1 div 0)] : (int * int) list
+   | h :: t -> (h, head_i (snd x)) :: zip2int (t, tail_i (snd x))
+
+fun nth_ii (x : ((int * int) list) * int) : (int * int) =
+   let n = snd x in
+   let ls = fst x in
+   if n = 1 then head_ii ls
+   else nth_ii (tail_ii ls, n-1)
+
+fun sumpair (x : int * int) : int = fst x + snd x
+
+in sumpair (nth_ii (zip2int ([2, 4, 5, 8] : int list,
+                    	     [3, 1, 7, 6] : int list),
+           	    4))

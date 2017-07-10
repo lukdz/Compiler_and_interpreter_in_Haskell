@@ -1,0 +1,10 @@
+fun fold_int_int(x : int * (int->int->int) * int list) : int =
+   let ls = snd (snd x) in
+   let acc = fst x in
+   let f = fst (snd x) in
+   match ls with
+   | [] -> acc
+   | h :: t -> fold_int_int (f acc h, f, t)
+
+in
+fold_int_int (2, fn(a:int) -> fn(e:int) -> (a + e), [1, 2, 3]:int list)

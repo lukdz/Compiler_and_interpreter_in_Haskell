@@ -1,0 +1,19 @@
+fun nth_int(x : (int list) * int) : int =
+   let n = snd x in
+   let ls = fst x in
+   match ls with
+   | [] -> 1 div 0
+   | h :: t ->
+      if n = 1 then h
+      else nth_int (t, n-1)
+
+fun map_int_to_int(x : (int -> int) * int list) : int list =
+   let f = fst x in
+   let ls = snd x in
+   match ls with
+   | [] -> [] : int list
+   | h :: t -> (f h) :: (map_int_to_int (f, t))
+
+in
+nth_int (map_int_to_int (fn (x:int) -> 3*x, [1, 2, 3]:int list), 2)
+

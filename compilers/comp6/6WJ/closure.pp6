@@ -1,0 +1,6 @@
+fun foo(x : int) : int -> int =
+  let y = 2 in
+  fn (a : int) -> a + x + y
+
+in
+(foo 2) 1

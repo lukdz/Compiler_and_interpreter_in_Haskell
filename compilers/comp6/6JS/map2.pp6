@@ -1,0 +1,11 @@
+fun map(p: (int->int)* int list) : int list =
+  match snd p with
+    | [] -> []:int list
+    | x :: xs -> (fst p) x :: map (fst p, xs)
+
+fun sum(l: int list) : int =
+  match l with
+    | [] -> 0
+    | x::xs -> x + sum xs
+
+input mult in sum (map (fn(x:int)->x*mult, [1,2,3,4,5]:int list))

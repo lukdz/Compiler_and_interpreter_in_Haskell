@@ -1,0 +1,5 @@
+fun f(x : int * int) : int = g(x)
+
+fun g(x : int * int) : int = snd x
+
+in f(1,2)

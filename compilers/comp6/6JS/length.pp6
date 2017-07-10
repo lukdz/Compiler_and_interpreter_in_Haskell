@@ -1,0 +1,6 @@
+fun length(l : int list) : int =
+  match l with
+    | [] -> 0
+    | x :: xs -> length xs + 1
+
+in length([1,2,3,4,5,6]: int list)

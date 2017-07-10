@@ -1,0 +1,64 @@
+fun isEmpty(x : int list) : bool =
+   match x with
+   | [] -> true
+   | h :: t -> false
+
+fun mergesort(ls : int list) : int list =
+   match ls with
+   | [] -> [] : int list
+   | h :: t ->
+      if isEmpty t then [h]:int list
+      else
+         let x = split ls in
+   	 let h1 = fst x in
+   	 let h2 = snd x in
+	 join (mergesort h1, mergesort h2)
+
+fun auxsplit(x : int list * int list) : int list * int list =
+   let ls1 = fst x in
+   let ls2 = snd x in
+   match ls1 with
+      | [] -> ([]:int list, ls2)
+      | h :: t ->
+         match t with
+         | [] -> ([h]:int list, ls2)
+         | h :: t1 ->
+            match ls2 with
+	    | [] -> ([1 div 0] : int list, [1 div 0] : int list)
+            | h :: t2 ->
+	       let x = auxsplit (t1, t2) in
+	       (h::t1, t2)
+			
+fun split(ls : int list) : int list * int list = auxsplit (ls, ls)
+
+fun join(x : int list * int list) : int list =
+   let ls1 = fst x in
+   let ls2 = snd x in
+   match ls1 with
+   | [] -> ls2
+   | h1::t1 ->
+      match ls2 with
+      | [] -> ls1
+      | h2::t2 ->
+         if h1 < h2 then h1 :: join (t1, ls2)
+	 else join (ls1, t2)
+
+fun auxsorted(x : int * int list) : bool =
+   let prev = fst x in
+   let ls = snd x in
+   match ls with
+   | [] -> true
+   | h::t ->
+      if prev <= h then auxsorted (h, t)
+      else false
+	    
+fun issorted(ls : int list) : bool =
+   match ls with
+   | [] -> true
+   | h::t -> auxsorted (h, t)
+
+in
+if issorted (mergesort [2, 6, 3, 4, 8, 1, 5, 9, 7] : int list) then 9
+else 1 div 0
+
+   

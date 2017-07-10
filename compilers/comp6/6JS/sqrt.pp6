@@ -1,0 +1,5 @@
+fun sqrt(n : int * int) : int =
+  if snd n * snd n <= fst n then snd n else sqrt(fst n, snd n - 1)
+
+
+input n in sqrt(n, n)

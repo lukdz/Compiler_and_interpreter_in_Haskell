@@ -1,0 +1,4 @@
+input x y z in
+let x = x * (z - y) in
+let flag = x > 42 in
+(y + z) * (if flag then 2 else 1)

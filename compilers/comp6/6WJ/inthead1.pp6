@@ -1,0 +1,6 @@
+fun inthead(ls : int list) : int =
+   match ls with
+   | [] -> 1 div 0
+   | h::t -> h
+
+in inthead([] : int list)
