@@ -1,6 +1,7 @@
 # Kompilator i interpreter w Haskellu
 
-Program powstał w ramach pracowni z Metod Programowania (w semestrze letni 2016/2017) na wydziale Informatyki Uniwersytetu Wrocławskiego.
+Projekt został zrealizowany w ramach pracowni przedmiotu Metody Programowania (w semestrze letni 2016/2017) na wydziale Informatyki Uniwersytetu Wrocławskiego.
+W ramach zadania napisałem kompilator i interpreter działący z językiem programowania HDML wg. dostarczonej specyfikacji. Kod wykonywalny jest przeznaczony dla procesora Motorola 6809, którego emulator został stworzony przez prowadzącego pracownię ([poles-p](#poles-p)) na podstawie dokumentacji technicznej.
 
 
 ## Wersje
@@ -152,7 +153,7 @@ Wykonanie wszystkich testów
 
 ## Podziękowania
 
-* mgr Piotr Polesiuk (https://github.com/poles-p) - autor pracowni z MP (sprawdzaczki, emulator)
+* <a name="poles-p">mgr Piotr Polesiuk (https://github.com/poles-p) - autor pracowni z MP (sprawdzaczki, emulator)</a>
 * Adam Sawicki (https://github.com/Asdamos) - udostępnione zestawy testów (6AST)
 * Jan Sierpina - udostępnione zestawy testów (JST)
 * Paweł Smolak (https://github.com/psmolak) - zebrane i udostępnione zestawy testów studentów przedmiotu
