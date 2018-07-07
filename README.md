@@ -48,7 +48,8 @@ ghc Comp5
 # cd ../..
 ```
 
-Kompilacja emulatora procesora Motorola 6809 <a name="emu6809"></a>
+<a name="emu6809">
+Kompilacja emulatora procesora Motorola 6809
 
 ```
 # cd compilers/emu6809
@@ -57,6 +58,7 @@ cp emu6809 ../comp5/
 cp emu6809 ../comp6/
 # cd ../..
 ```
+</a>
 
 
 ### Testowanie poszczególnych programów
@@ -100,8 +102,8 @@ chmod +x test.sh
 ```
 
 3. Umieść w katalogu (comp5 lub comp6) wykonywalne pliki:
-   - emu6809 [emu6809](#emu6809)
-   - Prac5 lub Prac6 [Prac6](#Prac6)
+   - [emu6809](#emu6809)
+   - Prac5 lub [Prac6](#Prac6)
 
 4. Uruchom testy
 
@@ -116,12 +118,14 @@ Wyniki mojego kompilatora znajdują się w pliku testReslut. Nie ręczę za nie,
 
 ## Testowanie interpretera
 
-Kompilacja interpretera, oraz sprawdzaczki <a name="Prac6"></a>
+<a name="Prac6">
+Kompilacja interpretera, oraz sprawdzaczki
 
 ```
 # cd interpreters/inter6
 ghc Prac6
 ```
+</a>
 
 Wykonanie wszystkich testów
 
