@@ -91,25 +91,33 @@ Skrypt, który porównuje wyniki działania zbioru programów testowych wykonany
 
 1. Otwórz katalog (comp5 lub comp6)
 
-```
-cd compilers/comp6
-```
+   ```
+   cd compilers/comp6
+   ```
 
 2. Nadaj uprawnienia skryptowi wykonującemu testy
 
-```
-chmod +x test.sh
-```
+   ```
+   chmod +x test.sh
+   ```
 
 3. Umieść w katalogu (comp5 lub comp6) wykonywalne pliki:
+
    - [emu6809](#emu6809)
+   ```
+   cp ../emu6809/emu6809 ./
+   ```
+
    - Prac5 lub [Prac6](#Prac6)
+   ```
+   cp ../../interpreters/inter6/Prac6 ./
+   ```
 
 4. Uruchom testy
 
-```
-./test.sh
-```
+   ```
+   ./test.sh
+   ```
 
 Wykonanie wszystkich testów powinno zająć ok. 5 sekund.
 

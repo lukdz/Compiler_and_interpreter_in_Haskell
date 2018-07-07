@@ -1,27 +1,31 @@
-#!/bin/bash   
+#!/bin/bash
 
 #wybrana wersja zadania (5 lub 6)
 Version="6"
 
+#Lista plików jest wpisana na sztywno, ponieważ w testach znajdują się pliki, które wymagają danych wejśiowych,
+#czego skrypt w obecnej wersji nie obsługuje
+# Files5=$(ls -h ./JST/*.pp5 | grep pp5 | sed "s/.pp5//g")
+
 #lista plików z kodem źródłowym z rozrzerzeniem .pp5
 Files5="./JST/array1
 	./JST/arraySum1
-	./JST/arraySum2 
-	./JST/arraySum3 
-	./JST/arraySum4 
+	./JST/arraySum2
+	./JST/arraySum3
+	./JST/arraySum4
 	./JST/bool1
 	./JST/bool2
 	./JST/fib1
 	./JST/fib2
-	./JST/length 
-	./JST/loop1 
+	./JST/length
+	./JST/loop1
 	./JST/mergesort1
 	./JST/mergesort2
 	./JST/mergesort3
-	./JST/mergesort4 
-	./JST/modulo1 
-	./JST/modulo2 
-	./JST/scalar 
+	./JST/mergesort4
+	./JST/modulo1
+	./JST/modulo2
+	./JST/scalar
 	./JST/simple
 	./JST/sum1
 	./JST/sum2
@@ -37,6 +41,7 @@ Files5="./JST/array1
 	./6DDT/ack
 	./6DDT/fibM
 	./6DDT/toBin"
+
 
 #lista plików z kodem źródłowym z rozrzerzeniem .pp6
 Files6="./6LDT/fn1
@@ -84,7 +89,7 @@ if [ "$?" -ne "0" ]
 		#wywołanie testów z rozszerzeniem .pp5
 		echo "Prac5"
 		for f in $Files5
-		do	
+		do
 			COMP="$(./Comp$Version  $f.pp5)"
 			EMULA="$(./emu6809  $f.b09)"
 			INTER="$(./Prac$Version  $f.pp5)"
@@ -126,5 +131,3 @@ if [ "$?" -ne "0" ]
 		#echo "test completed"
 		echo -e "test \t\t\tFINISHED"
 fi
-
-
