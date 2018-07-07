@@ -9,9 +9,20 @@ Repozytorium zawiera 3 wersje będące kolejnymi iteracjami zadania, z których 
 
 | Kompilator | Interpreter | Wspierane elementy języka |
 | --- | --- | --- |
-| `comp4` | `inter4` | Wyrażenia arytmetyczno-logiczne |
+|  | `inter4` | Wyrażenia arytmetyczno-logiczne |
 | `comp5` | `inter5` | + funkcje rekurencyjne (pierwszego rzędu), pary oraz listy |
 | `comp6` | `inter6` | + funkcje wyższego rzędu oraz funkcje anonimowe |
+
+
+## Kod źródłowy
+
+| Zadanie | Lokalizacja pliku |
+| --- | --- |
+| `inter4` | `interpreters/inter4/LukaszDzwoniarek.hs` |
+| `inter6` | `interpreters/inter6/LukaszDzwoniarek.hs` |
+| `inter5` | `interpreters/inter5/LukaszDzwoniarek.hs` |
+| `comp5` | `compilers/comp5/LukaszDzwoniarekCompiler.hs` |
+| `comp6` | `compilers/comp6/LukaszDzwoniarekCompiler.hs` |
 
 
 ### Wymagania
@@ -32,18 +43,19 @@ kompilator C
 Kompilacja kompilatora (dla wersji 6):
 
 ```
-cd compilers/comp5/
+# cd compilers/comp5/
 ghc Comp5
-cd ../..
+# cd ../..
 ```
 
-Kompilacja emulatora procesora Motorola 6809
+Kompilacja emulatora procesora Motorola 6809 <a name="emu6809"></a>
 
 ```
-cd compilers/emu6809
+# cd compilers/emu6809
 make
-cp emu6809 ../compilers/comp5/
-cd ../..
+cp emu6809 ../comp5/
+cp emu6809 ../comp6/
+# cd ../..
 ```
 
 
@@ -67,7 +79,7 @@ Wykonanie skompilowanego programu
 
 ```
 # cd compilers/comp5
-./emu6809 sum.b09
+./emu6809 ./JST/sum.b09
 ```
 
 
@@ -75,7 +87,11 @@ Wykonanie skompilowanego programu
 
 Skrypt, który porównuje wyniki działania zbioru programów testowych wykonanych na interpreterze i kompilatorze+emulatorze:
 
-1. Wypakuj archiwum w katalogu z rozwiązaniem (comp5 lub comp6)
+1. Otwórz katalog (comp5 lub comp6)
+
+```
+cd compilers/comp6
+```
 
 2. Nadaj uprawnienia skryptowi wykonującemu testy
 
@@ -83,12 +99,9 @@ Skrypt, który porównuje wyniki działania zbioru programów testowych wykonany
 chmod +x test.sh
 ```
 
-3. Umieść w katalogu (comp5 lub comp6) wykonywalne pliki
-
-```
-emu6809
-Prac5 lub Prac6
-```
+3. Umieść w katalogu (comp5 lub comp6) wykonywalne pliki:
+   - emu6809 [emu6809](#emu6809)
+   - Prac5 lub Prac6 [Prac6](#Prac6)
 
 4. Uruchom testy
 
@@ -103,18 +116,18 @@ Wyniki mojego kompilatora znajdują się w pliku testReslut. Nie ręczę za nie,
 
 ## Testowanie interpretera
 
-Kompilacja interpretera, oraz sprawdzaczki
+Kompilacja interpretera, oraz sprawdzaczki <a name="Prac6"></a>
 
 ```
-# cd interpreters/inter4
-ghc Prac4
+# cd interpreters/inter6
+ghc Prac6
 ```
 
 Wykonanie wszystkich testów
 
 ```
-# cd interpreters/inter4
-./Prac4 -t
+# cd interpreters/inter6
+./Prac6 -t
 ```
 
 
