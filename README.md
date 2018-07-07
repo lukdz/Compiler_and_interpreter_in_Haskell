@@ -151,6 +151,7 @@ Wykonanie wszystkich testów
 ## Podziękowania
 
 * mgr Piotr Polesiuk (https://github.com/poles-p) - autor pracowni z MP (sprawdzaczki, emulator)
-* Adam Sawicki (https://github.com/Asdamos) - udostępnione zestawy testów
+* Adam Sawicki (https://github.com/Asdamos) - udostępnione zestawy testów (6AST)
+* Jan Sierpina - udostępnione zestawy testów (JST)
 * Paweł Smolak (https://github.com/psmolak) - zebrane i udostępnione zestawy testów studentów przedmiotu
 * uczestnicy pracowni z Metod Programowania w roku 2016/2017, którzy udostępnili swoje zestawy testów
