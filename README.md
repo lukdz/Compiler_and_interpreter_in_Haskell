@@ -43,8 +43,8 @@ kompilator C
 Kompilacja kompilatora (dla wersji 6):
 
 ```
-# cd compilers/comp5/
-ghc Comp5
+# cd compilers/comp6/
+ghc Comp6
 # cd ../..
 ```
 
@@ -66,28 +66,28 @@ cp emu6809 ../comp6/
 Kompilacja do pliku:
 
 ```
-# cd compilers/comp5
-./Comp5 ./JST/sum.pp5
+# cd compilers/comp6
+./Comp6 ./JST/fib.pp5
 ```
 
 Kompilacja na ekran (wyświetlenie "kodu wynikowego" w postaci instrukcji):
 
 ```
-# cd compilers/comp5
-./Comp5 -m ./JST/sum.pp5
+# cd compilers/comp6
+./Comp6 -m ./JST/fib.pp5
 ```
 
 Wykonanie skompilowanego programu
 
 ```
-# cd compilers/comp5
-./emu6809 ./JST/sum.b09
+# cd compilers/comp6
+./emu6809 ./JST/fib.b09
 ```
 
 
 ### Zbiorcze wykonanie testów
 
-Skrypt, który porównuje wyniki działania zbioru programów testowych wykonanych na interpreterze i kompilatorze+emulatorze:
+Skrypt, który porównuje wyniki, działania zbioru programów, uzyskanych na interpreterze, z otrzymanymi przy pomocy kompilatora i emulatora:
 
 1. Otwórz katalog (comp5 lub comp6)
 
@@ -121,7 +121,7 @@ Skrypt, który porównuje wyniki działania zbioru programów testowych wykonany
 
 Wykonanie wszystkich testów powinno zająć ok. 5 sekund.
 
-Wyniki mojego kompilatora znajdują się w pliku testReslut. Nie ręczę za nie, jeśli uzyskasz inną odpowiedź porównaj z wynikiem, uzyskiwanym przez Prac6 na tym pliku. Jeśli sądzisz, że błąd jest w moich odpowiedziach proszę daj mi znać.
+Wyniki mojego kompilatora znajdują się w pliku testReslut
 
 
 ## Testowanie interpretera
