@@ -63,21 +63,23 @@ cp emu6809 ../comp6/
 
 ### Testowanie poszczególnych programów
 
-Kompilacja do pliku:
+Plik `./JST/fib.pp5` zawiera program obliczający n-tą liczbę Ciągu Fibonacciego.
+
+Kompilacja kodu źródłowego do pliku wykonywalnego (dla emulatora):
 
 ```
 # cd compilers/comp6
 ./Comp6 ./JST/fib.pp5
 ```
 
-Kompilacja na ekran (wyświetlenie "kodu wynikowego" w postaci instrukcji):
+Kompilacja na "ekran" (wyświetlenie kodu wynikowego w postaci instrukcji):
 
 ```
 # cd compilers/comp6
 ./Comp6 -m ./JST/fib.pp5
 ```
 
-Wykonanie skompilowanego programu
+Wykonanie skompilowanego programu przy pomocy emulatora:
 
 ```
 # cd compilers/comp6
