@@ -1,0 +1,4 @@
+fun loop(u : unit) : int =
+ loop ()
+input x in
+if x = 1 then loop() + 1 div 0 else 1 div 0 + loop()

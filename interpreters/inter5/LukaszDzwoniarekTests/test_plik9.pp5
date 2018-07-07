@@ -1,0 +1,4 @@
+input x y z v  in
+let t = (if x < y then x else y) in 
+  let p = (if z < v then z else v) in 
+    t + p

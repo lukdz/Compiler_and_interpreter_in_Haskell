@@ -1,0 +1,5 @@
+fun add(n: int * (int*(int->int)) ): int =
+  fst n
+
+input a in let x = (a,add) in
+  add x

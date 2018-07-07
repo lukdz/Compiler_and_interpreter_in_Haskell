@@ -19,7 +19,7 @@ import AST
 import DataTypes
 import Data.Either
 --import Data.List
-import Data.Either.Unwrap
+--import Data.Either.Unwrap
 
 -- Funkcja sprawdzająca typy
 -- Dla wywołania typecheck vars e zakładamy, że zmienne występujące

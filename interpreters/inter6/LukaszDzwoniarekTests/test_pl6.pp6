@@ -1,0 +1,7 @@
+fun sum(n : int) : int =
+  if n <= 1
+  then n
+  else sum(n-1)+1
+
+input x in
+  sum(x)

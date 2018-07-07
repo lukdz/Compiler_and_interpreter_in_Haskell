@@ -1,0 +1,6 @@
+fun list_length(l: int list) : int =
+    match l with
+    | [] -> 0
+    | x :: xs -> list_length xs + 1
+
+input n in (list_length ([1,2,3]:int list)) + n

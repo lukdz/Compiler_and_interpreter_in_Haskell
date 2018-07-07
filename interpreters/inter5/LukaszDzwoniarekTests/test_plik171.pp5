@@ -1,0 +1,15 @@
+fun head_int(l: int list) : int =
+    match l with
+    | [] -> 0
+    | x :: xs -> x
+
+fun tail_int(l: int list) : int list =
+    match l with
+    | [] -> 0
+    | x :: xs -> xs
+
+
+in let l = [1,2,3,4,5] : int list in
+match l with
+| [] -> 0
+| x :: xs -> xs

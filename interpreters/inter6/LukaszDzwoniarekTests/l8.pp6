@@ -1,0 +1,6 @@
+fun foo(f: int -> int) : int =
+  f 6 + f 6 + 5
+
+input x in
+  let bar = fn (u : int) -> x + 3  in
+    foo bar

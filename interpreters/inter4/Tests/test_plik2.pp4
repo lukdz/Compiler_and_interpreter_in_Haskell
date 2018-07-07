@@ -1,0 +1,5 @@
+input x y z v in
+if x <> y then
+  z
+else
+  v

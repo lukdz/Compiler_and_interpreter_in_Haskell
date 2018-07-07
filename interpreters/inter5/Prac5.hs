@@ -26,8 +26,8 @@
 
 -- Należy zmodyfikować poniższe dwa wiersze zmieniając nazwy modułów
 --import qualified ImieNazwiskoTests as Tests
---import qualified LukaszDzwoniarekTests as Tests
-import qualified AdamSawickiTests as Tests
+import qualified LukaszDzwoniarekTests as Tests
+--import qualified AdamSawickiTests as Tests
 --import qualified ImieNazwisko as Solution
 import qualified LukaszDzwoniarek as Solution
 

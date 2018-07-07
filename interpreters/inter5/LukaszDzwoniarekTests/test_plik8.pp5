@@ -1,0 +1,5 @@
+input x y z v in
+if x < y or z = v then
+  1
+else
+  0

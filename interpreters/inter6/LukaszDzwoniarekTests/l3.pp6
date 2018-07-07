@@ -1,0 +1,5 @@
+fun add(n: int*int): int =
+  ( fn( y : int*int) -> fst y + snd n ) n
+
+input a b in let x = (a,b) in
+  add x

@@ -1,0 +1,8 @@
+fun just(n: int): int =
+  n
+
+fun add(n: int*(int->int)): int =
+  fst n
+
+input a in let x = (a,just) in
+  add x

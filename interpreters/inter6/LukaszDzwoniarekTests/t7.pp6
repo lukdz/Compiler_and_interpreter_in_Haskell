@@ -1,0 +1,5 @@
+fun f(f: int ): int = f
+
+fun h(x: int): int = x
+
+input x in f x

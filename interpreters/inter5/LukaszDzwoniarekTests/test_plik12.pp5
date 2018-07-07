@@ -1,0 +1,10 @@
+fun nwd(x: int*int) : int = let a = fst x in let b = snd x in
+    if b = 0 then
+        a
+    else
+        nwd (b, a mod b)
+
+fun nww(x: int*int) : int = let a = fst x in let b = snd x in
+    (a * b) div (nwd(a,b)) 
+
+input a b in nww (a,b)

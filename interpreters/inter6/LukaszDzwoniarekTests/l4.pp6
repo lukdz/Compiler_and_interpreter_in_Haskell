@@ -1,0 +1,9 @@
+fun fib(n : int*int list) : int =
+  if fst n <= 1
+  then fst n
+  else ( fn( y : int) -> fib(y-1, snd n) + fib(y-2, snd n) )  (fst n)
+
+input a b c d in
+  let l = [b,c,d]:int list in
+  let x = (a,l) in
+  fib(x)

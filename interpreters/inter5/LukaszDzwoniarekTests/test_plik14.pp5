@@ -1,0 +1,7 @@
+fun head_int(l: int list) : int = 
+    match l with
+    | [] -> 0    
+    | x :: xs -> x
+     
+
+input a in head_int a::[]: bool
