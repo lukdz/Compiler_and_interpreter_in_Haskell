@@ -1,24 +1,23 @@
-# Kompilator i interpreter w Haskellu
+# Compiler and interpreter in Haskell
 
-Projekt został zrealizowany w ramach pracowni przedmiotu Metody Programowania (w semestrze letni 2016/2017) na wydziale Informatyki Uniwersytetu Wrocławskiego.
+The project was implemented as part of the Programming Methodology (in the 2016/2017 summer semester) at the Faculty of Computer Science of the University of Wrocław.
 
-W ramach zadania napisałem kompilator i interpreter działący z językiem programowania HDML wg. dostarczonej specyfikacji. Kod wykonywalny jest przeznaczony dla procesora Motorola 6809, którego emulator został stworzony przez prowadzącego pracownię ([poles-p](#poles-p)) na podstawie dokumentacji technicznej.
+As part of the task I wrote a compiler and interpreter working with the HDML programming language acc. specification provided. The executable code is for the Motorola 6809 processor, the emulator of which was created by the leading laboratory ([poles-p](#poles-p)) on the basis of technical documentation.
 
+## Versions
 
-## Wersje
+The repository contains 3 versions being successive iterations of the task, each of which supports the expanded set of simple HDML language instructions created for the needs of the studio.
 
-Repozytorium zawiera 3 wersje będące kolejnymi iteracjami zadania, z których każda kolejna wspiera poszerzony zbiór instrukcji prostego języku HDML stworzonego na potrzeby pracowni.
-
-| Kompilator | Interpreter | Wspierane elementy języka |
+| Compiler | Interpreter | Supported language elements |
 | --- | --- | --- |
-|  | `inter4` | Wyrażenia arytmetyczno-logiczne |
-| `comp5` | `inter5` | + funkcje rekurencyjne (pierwszego rzędu), pary oraz listy |
-| `comp6` | `inter6` | + funkcje wyższego rzędu oraz funkcje anonimowe |
+|  | `inter4` | Arithmetic and logical expressions |
+| `comp5` | `inter5` | + recursive functions (first order), pair and list |
+| `comp6` | `inter6` | + higher-order functions and anonymous functions |
 
 
-## Kod źródłowy
+## Source code
 
-| Zadanie | Lokalizacja pliku z kodem źródłowym |
+| Task | Location of the file with the source code |
 | --- | --- |
 | `inter4` | `interpreters/inter4/LukaszDzwoniarek.hs` |
 | `inter6` | `interpreters/inter6/LukaszDzwoniarek.hs` |
@@ -27,22 +26,22 @@ Repozytorium zawiera 3 wersje będące kolejnymi iteracjami zadania, z których 
 | `comp6` | `compilers/comp6/LukaszDzwoniarekCompiler.hs` |
 
 
-### Wymagania
+### Requirements
 
-W celu uruchomienia oprogramowanie niezbędny są:
+In order to run the software you need:
 
 ```
 Glasgow Haskell Compiler = GHC
-Kompilator C
+C Compiler
 ```
 
 
-## Kompilator
+## Compiler
 
 
-### Kompilacja
+### Compiling
 
-Kompilacja kompilatora (w wersji 6):
+Compilation compilation (version 6):
 
 ```
 # cd compilers/comp6/
@@ -51,7 +50,7 @@ ghc Comp6
 ```
 
 <a name="emu6809">
-Kompilacja emulatora procesora Motorola 6809:
+Compilation of Motorola 6809 processor emulator:
 
 ```
 # cd compilers/emu6809
@@ -63,25 +62,25 @@ cp emu6809 ../comp6/
 </a>
 
 
-### Testowanie poszczególnych programów
+### Testing individual programs
 
-Plik `./JST/fib.pp5` zawiera przykładowy program obliczający n-tą liczbę Ciągu Fibonacciego.
+File `./JST/fib.pp5` contains an example program calculating the nth number of the Fibonacci sequence.
 
-Kompilacja kodu źródłowego do pliku wykonywalnego (na procesorze Motorola 6809 lub emulatorze [emu6809](#emu6809)):
+Compilation of the source code to the executable file (on the Motorola 6809 processor or emulator [emu6809](#emu6809)):
 
 ```
 # cd compilers/comp6
 ./Comp6 ./JST/fib.pp5
 ```
 
-Kompilacja na "ekran" (wyświetlenie kodu wynikowego w postaci instrukcji):
+Compilation on the "screen" (displaying the result code in the form of instructions in human readable form):
 
 ```
 # cd compilers/comp6
 ./Comp6 -m ./JST/fib.pp5
 ```
 
-Wykonanie skompilowanego programu przy pomocy emulatora:
+Compilation of the compiled program using the emulator:
 
 ```
 # cd compilers/comp6
@@ -89,23 +88,23 @@ Wykonanie skompilowanego programu przy pomocy emulatora:
 ```
 
 
-### Testowanie zbioru programów
+### Testing a set of programs
 
-Skrypt, który porównuje wyniki, działania przykładowych programów, uzyskanych na interpreterze, z otrzymanymi przy pomocy kompilatora i emulatora:
+The script that compares the results, the actions of the sample programs obtained on the interpreter, with the help of the compiler and the emulator:
 
-1. Otwórz katalog comp6:
+1. Open the comp6 directory:
 
    ```
    cd compilers/comp6
    ```
 
-2. Nadaj uprawnienia skryptowi wykonującemu testy:
+2. Give executive privileges to the script that performs the tests:
 
    ```
    chmod +x test.sh
    ```
 
-3. Umieść w katalogu comp6 wykonywalne pliki:
+3. Place executable files in the comp6 directory:
 
    - [emu6809](#emu6809)
    ```
@@ -117,21 +116,21 @@ Skrypt, który porównuje wyniki, działania przykładowych programów, uzyskany
    cp ../../interpreters/inter6/Prac6 ./
    ```
 
-4. Uruchom testy
+4. Run tests
 
    ```
    ./test.sh
    ```
 
-Wykonanie wszystkich testów powinno trwać ok. 5 sekund.
+Performing all tests should take about 5 seconds.
 
-Wyniki mojego kompilatora znajdują się w pliku testReslut
+The results of my compiler can be found in the testReslut file.
 
 
-## Testowanie interpretera
+## Interpreter Testing
 
 <a name="Prac6">
-Kompilacja interpretera, oraz sprawdzaczki
+Compiling interpreter and checker
 
 ```
 # cd interpreters/inter6
@@ -139,7 +138,7 @@ ghc Prac6
 ```
 </a>
 
-Wykonanie wszystkich testów
+Running all tests
 
 ```
 # cd interpreters/inter6
@@ -147,15 +146,15 @@ Wykonanie wszystkich testów
 ```
 
 
-## Zbudowanie z wykorzystaniem
+## Built With
 
 * [GHC](https://www.haskell.org/ghc/) - The Glasgow Haskell Team
 
 
-## Podziękowania
+## Acknowledgments
 
-* <a name="poles-p">mgr Piotr Polesiuk (https://github.com/poles-p) - autor pracowni z MP (sprawdzaczki, emulator)</a>
-* Adam Sawicki (https://github.com/Asdamos) - udostępnione zestawy testów (6AST)
-* Jan Sierpina - udostępnione zestawy testów (JST)
-* Paweł Smolak (https://github.com/psmolak) - zebrane i udostępnione zestawy testów studentów przedmiotu
-* uczestnicy pracowni z Metod Programowania w roku 2016/2017, którzy udostępnili swoje zestawy testów
+* <a name="poles-p">mgr Piotr Polesiuk (https://github.com/poles-p) - author of task from the Programming Methods (checker, emulator)</a>
+* Adam Sawicki (https://github.com/Asdamos) - shared test sets (6AST)
+* Jan Sierpina - shared test sets (JST)
+* Paweł Smolak (https://github.com/psmolak) - collections and test sets of students of the subject
+* other participants of the studio with Programming Methods in 2016/2017, who have released their test sets
